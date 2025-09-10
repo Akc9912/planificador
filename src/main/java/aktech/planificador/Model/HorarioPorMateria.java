@@ -4,31 +4,31 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "materias_por_usuario")
-@IdClass(MateriaPorUsuario.PK.class)
-public class MateriaPorUsuario {
-    @Id
-    @Column(name = "id_usuario")
-    private int idUsuario;
-
+@Table(name = "horario_por_materia")
+@IdClass(HorarioPorMateria.PK.class)
+public class HorarioPorMateria {
     @Id
     @Column(name = "id_materia")
     private int idMateria;
 
+    @Id
+    @Column(name = "id_horario")
+    private int idHorario;
+
     // Getters y setters
-    public int getIdUsuario() { return idUsuario; }
-    public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
     public int getIdMateria() { return idMateria; }
     public void setIdMateria(int idMateria) { this.idMateria = idMateria; }
+    public int getIdHorario() { return idHorario; }
+    public void setIdHorario(int idHorario) { this.idHorario = idHorario; }
 
     // PK compuesta
     public static class PK implements Serializable {
-        private int idUsuario;
         private int idMateria;
+        private int idHorario;
         public PK() {}
-        public PK(int idUsuario, int idMateria) {
-            this.idUsuario = idUsuario;
+        public PK(int idMateria, int idHorario) {
             this.idMateria = idMateria;
+            this.idHorario = idHorario;
         }
         // equals y hashCode
         @Override
@@ -36,11 +36,11 @@ public class MateriaPorUsuario {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             PK pk = (PK) o;
-            return idUsuario == pk.idUsuario && idMateria == pk.idMateria;
+            return idMateria == pk.idMateria && idHorario == pk.idHorario;
         }
         @Override
         public int hashCode() {
-            return idUsuario + idMateria;
+            return idMateria + idHorario;
         }
     }
 }

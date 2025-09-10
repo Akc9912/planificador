@@ -1,12 +1,24 @@
+
 package aktech.planificador.Model;
 
+
+import jakarta.persistence.*;
 import aktech.planificador.Model.enums.EstadoMateria;
 
+@Entity
+@Table(name = "materias")
 public class Materia {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(nullable = false)
     private String titulo;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EstadoMateria estado;
+    @Column(name = "activo", nullable = false)
     private boolean active;
+    @Column
     private String color;
 
     public Materia() {
