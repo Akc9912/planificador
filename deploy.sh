@@ -43,12 +43,9 @@ build_project() {
 }
 
 load_env() {
-    if [ -f "$PROJECT_DIR/.env" ]; then
-        echo "Cargando variables de entorno..."
-        set -a
-        source "$PROJECT_DIR/.env"
-        set +a
-    fi
+    set -o allexport
+    source "$PROJECT_DIR/.env"
+    set +o allexport
 }
 
 # =========================
