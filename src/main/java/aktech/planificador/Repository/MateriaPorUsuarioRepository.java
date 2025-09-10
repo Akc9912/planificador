@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import aktech.planificador.Model.MateriaPorUsuario;
 
 public interface MateriaPorUsuarioRepository extends JpaRepository<MateriaPorUsuario, Integer> {
-    Optional<MateriaPorUsuario> findByUsuarioIdAndMateriaId(int usuarioId, int materiaId);
-    Optional<MateriaPorUsuario> findByUsuarioId(int usuarioId);
+    Optional<MateriaPorUsuario> findByIdUsuarioAndIdMateria(int idUsuario, int idMateria);
+    Optional<MateriaPorUsuario> findByIdUsuario(int idUsuario);
 }
