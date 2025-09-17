@@ -15,9 +15,10 @@ import aktech.planificador.Model.core.Usuario;
 
 @Service
 public class JwtService {
-    private static final String SECRET_KEY = System.getenv().getOrDefault("JWT_SECRET_KEY", "default-key-change-me");
+    private static final String SECRET_KEY = System.getenv().getOrDefault("PLANNI_JWT_SECRET_KEY",
+            "default-key-change-me");
     private static final long EXPIRATION_MS = Long
-            .parseLong(System.getenv().getOrDefault("JWT_EXPIRATION_MS", "86400000"));
+            .parseLong(System.getenv().getOrDefault("PLANNI_JWT_EXPIRATION_MS", "86400000"));
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
