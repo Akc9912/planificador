@@ -1,61 +1,66 @@
+
 package aktech.planificador.Model.core;
 
-import jakarta.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.*;
 import aktech.planificador.Model.enums.Rol;
 
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column(nullable = false, unique = true)
+    private Integer id;
+
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
-    @Column(nullable = false)
-    private String pass;
-    @Column(nullable = false)
+
+    @Column(nullable = false, length = 100)
+    private String passwordHash;
+
+    @Column(nullable = false, length = 100)
     private String nombre;
-    @Column(nullable = false)
+
+    @Column(nullable = false, length = 100)
     private String apellido;
-    @Column(name = "activo", nullable = false)
-    private boolean isActive;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private Rol rol;
-    @Column(name = "cambiar_pass", nullable = false)
-    private boolean cambiarPass;
 
-    public Usuario(String email, String nombre, String apellido, Rol rol) {
-        this.email = email;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.isActive = true;
-        this.cambiarPass = true;
-        this.rol = rol;
-    }
-
-    // constuctor con password para registrar usuario
-    public Usuario(String email, String password, String nombre, String apellido, Rol rol) {
-        this.email = email;
-        this.pass = password;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.isActive = true;
-        this.cambiarPass = false;
-        this.rol = rol;
-    }
+    private Boolean activo;
+    private Boolean cambiarPass;
+    private Boolean emailVerified;
 
     public Usuario() {
+        this.activo = true;
+        this.cambiarPass = false;
+        this.emailVerified = false;
     }
 
-    // getters and setters
-    public int getId() {
+    public Usuario(String email, String passwordHash, String nombre, String apellido, Rol rol) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.rol = rol;
+        this.activo = true;
+        this.cambiarPass = false;
+        this.emailVerified = false;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -67,12 +72,12 @@ public class Usuario {
         this.email = email;
     }
 
-    public String getPassword() {
-        return pass;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.pass = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getNombre() {
@@ -91,14 +96,6 @@ public class Usuario {
         this.apellido = apellido;
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
     public Rol getRol() {
         return rol;
     }
@@ -106,10 +103,67 @@ public class Usuario {
     public void setRol(Rol rol) {
         this.rol = rol;
     }
-    public boolean isCambiarPass() {
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Boolean getCambiarPass() {
         return cambiarPass;
     }
-    public void setCambiarPass(boolean cambiarPass) {
+
+    public void setCambiarPass(Boolean cambiarPass) {
         this.cambiarPass = cambiarPass;
+    }
+
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    // UserDetails implementation
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (rol != null) {
+            return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + rol.name()));
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getPassword() {
+        return passwordHash;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return activo == null ? true : activo;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return activo == null ? true : activo;
     }
 }

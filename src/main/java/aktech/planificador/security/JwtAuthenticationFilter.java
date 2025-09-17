@@ -1,7 +1,5 @@
 package aktech.planificador.security;
 
-import aktech.planificador.Model.core.Usuario;
-import aktech.planificador.Service.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import aktech.planificador.Service.security.JwtService;
+
 import java.io.IOException;
 
 import org.springframework.stereotype.Component;
@@ -39,9 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String username;
-                logger.info("[JWT Filter] Método: {} Endpoint: {}", request.getMethod(), request.getRequestURI());
+        logger.info("[JWT Filter] Método: {} Endpoint: {}", request.getMethod(), request.getRequestURI());
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            logger.warn("No se encontró el header Authorization o no es Bearer. Request: {} {}", request.getMethod(), request.getRequestURI());
+            logger.warn("No se encontró el header Authorization o no es Bearer. Request: {} {}", request.getMethod(),
+                    request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -49,17 +51,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         username = jwtService.extractUsername(jwt);
         logger.info("JWT extraído: {}", jwt);
         logger.info("Email extraído del token: {}", username);
-        logger.info("Authentication actual en SecurityContext: {}", SecurityContextHolder.getContext().getAuthentication());
+        logger.info("Authentication actual en SecurityContext: {}",
+                SecurityContextHolder.getContext().getAuthentication());
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                    String rol = null;
-                    if (userDetails instanceof Usuario usuario) {
-                        rol = usuario.getRol() != null ? usuario.getRol().name() : "NO_ROLE";
-                    }
-                    logger.info("[JWT Filter] Usuario autenticado: {} Rol: {}", username, rol);
+            String rol = null;
+            if (userDetails instanceof aktech.planificador.Model.core.Usuario usuario) {
+                rol = usuario.getRol() != null ? usuario.getRol().name() : "NO_ROLE";
+            }
+            logger.info("[JWT Filter] Usuario autenticado: {} Rol: {}", username, rol);
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 logger.info("Token válido para usuario: {}", username);
-                UsernamePasswordAuthenticationToken authToken = jwtService.getAuthentication(jwt, userDetails);
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } else {

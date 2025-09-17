@@ -1,71 +1,114 @@
 package aktech.planificador.Service.core;
 
-import aktech.planificador.DTO.auth.UserRegisterRequestDto;
-import aktech.planificador.Model.core.Usuario;
-import aktech.planificador.Repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import aktech.planificador.DTO.usuarios.UsuarioRequestDTO;
+import aktech.planificador.DTO.usuarios.UsuarioResponseDTO;
+import aktech.planificador.Model.core.Admin;
+import aktech.planificador.Model.core.NormalUser;
+import aktech.planificador.Model.core.Usuario;
+import aktech.planificador.Repository.core.UsuarioRepository;
 
 @Service
 public class UsuarioService {
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    // Usar los DTO para las respuestas y peticiones
+    private final UsuarioRepository usuarioRepository;
 
-    
-
-    // crear un nuevo usuario (desde el admin)
-    public Usuario crearUsuario(UserRegisterRequestDto request) {
-        Usuario usuario = new Usuario();
-        usuario.setEmail(request.getEmail());
-        usuario.setPassword(request.getApellido() + "123"); // contraseña por defecto si lo crea el admin
-        usuario.setNombre(request.getNombre());
-        usuario.setApellido(request.getApellido());
-        return usuarioRepository.save(usuario);
+    public UsuarioService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
 
-    // Obtener todos los usuarios
-    public List<Usuario> obtenerTodosLosUsuarios() {
-        return usuarioRepository.findAll();
+    public UsuarioResponseDTO mapToDto(Usuario user) {
+        UsuarioResponseDTO dto = new UsuarioResponseDTO();
+        dto.setId(user.getId());
+        dto.setEmail(user.getEmail());
+        dto.setNombre(user.getNombre());
+        dto.setApellido(user.getApellido());
+        dto.setRol(user.getRol().toString());
+        dto.setActivo(user.getActivo());
+        dto.setCambiarPass(user.getCambiarPass());
+        dto.setEmailVerified(user.getEmailVerified());
+        return dto;
     }
 
-    // Obtener un usuario por su ID
-    public Optional<Usuario> obtenerUsuarioPorId(int id) {
-        return usuarioRepository.findById(id);
-    }
+    // crear usuarios (para admin)
 
-    // obtener un usuario por su email
-    public Optional<Usuario> obtenerUsuarioPorEmail(String email) {
-        return usuarioRepository.findByEmail(email);
-    }
-
-    // Actualizar un usuario existente
-    public Optional<Usuario> actualizarUsuario(int id, UserRegisterRequestDto request) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
-        if (usuarioExistente.isPresent()) {
-            Usuario usuario = usuarioExistente.get();
-            usuario.setEmail(request.getEmail());
-            usuario.setPassword(request.getPassword());
-            usuario.setNombre(request.getNombre());
-            usuario.setApellido(request.getApellido());
-            return Optional.of(usuarioRepository.save(usuario));
+    public UsuarioResponseDTO createUsuario(UsuarioRequestDTO dto) {
+        if (dto.getEmail() == null || dto.getEmail().isEmpty() ||
+                dto.getNombre() == null || dto.getNombre().isEmpty() ||
+                dto.getApellido() == null || dto.getApellido().isEmpty()) {
+            throw new IllegalArgumentException("Faltan campos obligatorios");
         }
-        return Optional.empty();
-    }
 
-    // Eliminar un usuario (baja lógica)
-    public boolean eliminarUsuario(int id) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
-        if (usuarioExistente.isPresent()) {
-            Usuario usuario = usuarioExistente.get();
-            usuario.setActive(false); // Baja lógica
-            usuarioRepository.save(usuario);
-            return true;
+        // Verificar si el email ya está en uso
+        if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("El email ya está en uso");
         }
-        return false;
+
+        // Por defecto, crear como NormalUser
+        Usuario newUser = new NormalUser(
+                dto.getEmail(),
+                null, // password no viene en el DTO
+                dto.getNombre(),
+                dto.getApellido());
+        newUser.setActivo(true);
+        newUser.setCambiarPass(true);
+        newUser.setEmailVerified(true);
+
+        Usuario savedUser = usuarioRepository.save(newUser);
+        return mapToDto(savedUser);
     }
 
+    // crear usuario (para auth, registro por el mismo usuario)
+    public UsuarioResponseDTO createUsuario(Usuario user) {
+        if (user.getEmail() == null || user.getEmail().isEmpty() ||
+                user.getPasswordHash() == null || user.getPasswordHash().isEmpty() ||
+                user.getNombre() == null || user.getNombre().isEmpty() ||
+                user.getApellido() == null || user.getApellido().isEmpty()) {
+            throw new IllegalArgumentException("Faltan campos obligatorios");
+        }
+
+        // Verificar si el email ya está en uso
+        if (usuarioRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("El email ya está en uso");
+        }
+
+        user.setActivo(true); // Por defecto, el usuario se crea como activo
+        user.setCambiarPass(false); // por registro propio, no necesita cambiar la pass
+        user.setEmailVerified(false); // por ahora hasta implementar verificación de email
+
+        Usuario savedUser = usuarioRepository.save(user);
+        return mapToDto(savedUser);
+    }
+
+    // actualizar usuario para normal y admin
+    public UsuarioResponseDTO updateUsuario(Integer id, UsuarioRequestDTO dto) {
+        Usuario existingUser = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id: " + id));
+
+        if (dto.getEmail() != null && !dto.getEmail().isEmpty()) {
+            // Verificar si el nuevo email ya está en uso por otro usuario
+            usuarioRepository.findByEmail(dto.getEmail()).ifPresent(userWithEmail -> {
+                if (!userWithEmail.getId().equals(id)) {
+                    throw new IllegalArgumentException("El email ya está en uso por otro usuario");
+                }
+            });
+            existingUser.setEmail(dto.getEmail());
+        }
+        if (dto.getNombre() != null && !dto.getNombre().isEmpty()) {
+            existingUser.setNombre(dto.getNombre());
+        }
+        if (dto.getApellido() != null && !dto.getApellido().isEmpty()) {
+            existingUser.setApellido(dto.getApellido());
+        }
+        usuarioRepository.save(existingUser);
+        return mapToDto(existingUser);
+    }
+
+    // baja usuario (solo desactivar)
+    public boolean deleteUsuario(Integer id) {
+        Usuario existingUser = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id: " + id));
+        existingUser.setActivo(false);
+        usuarioRepository.save(existingUser);
+        return true;
+    }
 }

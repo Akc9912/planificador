@@ -1,25 +1,9 @@
-package aktech.planificador.Controller;
+package aktech.planificador.DTO.usuarios;
 
-public class RegisterResponseDTO {
-    private String message;
+public class UsuarioRequestDTO {
     private String email;
     private String nombre;
     private String apellido;
-
-    public RegisterResponseDTO(String message, String email, String nombre, String apellido) {
-        this.message = message;
-        this.email = email;
-        this.nombre = nombre;
-        this.apellido = apellido;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public String getEmail() {
         return email;

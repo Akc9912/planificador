@@ -1,24 +1,13 @@
 package aktech.planificador.DTO.auth;
 
+import aktech.planificador.DTO.usuarios.UserSettingsResponseDTO;
+import aktech.planificador.DTO.usuarios.UsuarioResponseDTO;
 
-import aktech.planificador.DTO.core.UsuarioResponseDto;
-import jakarta.validation.constraints.NotBlank;
-
-public class LoginResponseDto {
-    @NotBlank(message = "El token no puede estar vacío")
+public class LoginResponseDTO {
     private String token;
+    private UsuarioResponseDTO usuario;
+    private UserSettingsResponseDTO userSettings;
 
-    private UsuarioResponseDto usuario;
-
-    public LoginResponseDto() {
-    }
-
-    public LoginResponseDto(String token, UsuarioResponseDto usuario) {
-        this.token = token;
-        this.usuario = usuario;
-    }
-
-    // Getters y setters
     public String getToken() {
         return token;
     }
@@ -27,11 +16,19 @@ public class LoginResponseDto {
         this.token = token;
     }
 
-    public UsuarioResponseDto getUsuario() {
+    public UsuarioResponseDTO getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(UsuarioResponseDto usuario) {
+    public void setUsuario(UsuarioResponseDTO usuario) {
         this.usuario = usuario;
+    }
+
+    public UserSettingsResponseDTO getUserSettings() {
+        return userSettings;
+    }
+
+    public void setUserSettings(UserSettingsResponseDTO userSettings) {
+        this.userSettings = userSettings;
     }
 }

@@ -1,32 +1,26 @@
 package aktech.planificador.Service.security;
 
+import aktech.planificador.Model.core.Usuario;
+import aktech.planificador.Repository.core.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import aktech.planificador.Repository.UsuarioRepository;
-
-import org.springframework.security.core.userdetails.UserDetailsService;
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-        private final UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
+    @Autowired
     public CustomUserDetailsService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Busca el usuario por email
-        var usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
-
-        // Verificación de seguridad: solo los usuarios INACTIVOS se tratan como si no existieran
-        if (!usuario.isActive()) {
-            throw new UsernameNotFoundException("Usuario no encontrado: " + email);
-        }
-
-        return (UserDetails) usuario;
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return usuarioRepository.findByEmail(username)
+                .map(user -> (UserDetails) user)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
     }
 }
