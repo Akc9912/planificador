@@ -177,7 +177,10 @@ public class MateriaService {
             }
             List<Materia> materias = materiaRepository.findByUsuarioId(usuarioId);
             return materias.stream()
-                    .map(m -> new MateriaResponseDto(m, null))
+                    .map(m -> {
+                        List<HorarioPorMateria> horarios = horarioRepository.findByMateriaId(m.getId());
+                        return new MateriaResponseDto(m, horarios);
+                    })
                     .collect(Collectors.toList());
         } catch (Exception e) {
             return List.of();
