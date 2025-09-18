@@ -2,6 +2,8 @@ package aktech.planificador.Model.historial;
 
 import jakarta.persistence.*;
 
+import java.time.LocalTime;
+
 import aktech.planificador.Model.core.Materia;
 import aktech.planificador.Model.enums.DiaSemana;
 
@@ -20,14 +22,14 @@ public class HorarioPorMateria {
     @Column(nullable = false, length = 10)
     private DiaSemana dia;
 
-    private java.time.LocalTime horaInicio;
-    private java.time.LocalTime horaFin;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
 
     public HorarioPorMateria() {
     }
 
-    public HorarioPorMateria(Integer id, Materia materia, DiaSemana dia, java.time.LocalTime horaInicio,
-            java.time.LocalTime horaFin) {
+    public HorarioPorMateria(Integer id, Materia materia, DiaSemana dia, LocalTime horaInicio,
+            LocalTime horaFin) {
         this.id = id;
         this.materia = materia;
         this.dia = dia;
@@ -59,19 +61,19 @@ public class HorarioPorMateria {
         this.dia = dia;
     }
 
-    public java.time.LocalTime getHoraInicio() {
+    public LocalTime getHoraInicio() {
         return horaInicio;
     }
 
-    public void setHoraInicio(java.time.LocalTime horaInicio) {
+    public void setHoraInicio(LocalTime horaInicio) {
         this.horaInicio = horaInicio;
     }
 
-    public java.time.LocalTime getHoraFin() {
+    public LocalTime getHoraFin() {
         return horaFin;
     }
 
-    public void setHoraFin(java.time.LocalTime horaFin) {
+    public void setHoraFin(LocalTime horaFin) {
         this.horaFin = horaFin;
     }
 }

@@ -7,6 +7,7 @@ import aktech.planificador.Dto.GenericResponseDto;
 import aktech.planificador.Dto.materia.HorarioMateriaRequestDto;
 import aktech.planificador.Dto.materia.MateriaRequestDto;
 import aktech.planificador.Dto.materia.MateriaResponseDto;
+import aktech.planificador.Dto.materia.MateriaPlannerResponseDto;
 import aktech.planificador.Model.core.Materia;
 import aktech.planificador.Model.core.Usuario;
 import aktech.planificador.Model.enums.EstadoMateria;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MateriaService {
@@ -220,7 +222,7 @@ public class MateriaService {
 
     // lista de materias con horario, para el planificador (si una materia tiene
     // varios horarios, se repite la materia en cada horario)
-    public List<MateriaResponseDto> obtenerMateriasConHorariosPorUsuario(Integer usuarioId) {
+    public List<MateriaPlannerResponseDto> obtenerMateriasConHorariosPorUsuario(Integer usuarioId) {
         try {
             if (usuarioId == null) {
                 return List.of();
@@ -230,10 +232,23 @@ public class MateriaService {
                 return List.of();
             }
             List<Materia> materias = materiaRepository.findByUsuarioId(usuarioId);
+            // Solo materias en estado CURSANDO y con al menos un horario
             return materias.stream()
-                    .map(m -> {
+                    .filter(m -> m.getEstado() != null && m.getEstado().name().equalsIgnoreCase("CURSANDO"))
+                    .flatMap(m -> {
                         List<HorarioPorMateria> horarios = horarioRepository.findByMateriaId(m.getId());
-                        return new MateriaResponseDto(m, horarios);
+                        if (horarios == null || horarios.isEmpty()) {
+                            return Stream.empty();
+                        }
+                        return horarios.stream().map(horario -> {
+                            MateriaPlannerResponseDto dto = new MateriaPlannerResponseDto();
+                            dto.setTitulo(m.getTitulo());
+                            dto.setColor(m.getColor());
+                            dto.setHoraInicio(horario.getHoraInicio());
+                            dto.setHoraFin(horario.getHoraFin());
+                            dto.setDia(horario.getDia());
+                            return dto;
+                        });
                     })
                     .collect(Collectors.toList());
         } catch (Exception e) {

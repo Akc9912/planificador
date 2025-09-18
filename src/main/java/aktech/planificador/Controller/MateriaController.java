@@ -2,9 +2,12 @@ package aktech.planificador.Controller;
 
 import aktech.planificador.Dto.GenericResponseDto;
 import aktech.planificador.Dto.materia.HorarioMateriaRequestDto;
+import aktech.planificador.Dto.materia.MateriaPlannerResponseDto;
 import aktech.planificador.Dto.materia.MateriaRequestDto;
 import aktech.planificador.Dto.materia.MateriaResponseDto;
 import aktech.planificador.Service.core.MateriaService;
+
+import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -41,9 +44,9 @@ public class MateriaController {
         return materiaService.obtenerMateriasPorUsuario(usuarioId);
     }
 
-    // Obtener materias con horarios por usuario
+    // Obtener materias con horarios por usuario - para vista planner
     @GetMapping("/usuario/{usuarioId}/con-horarios")
-    public java.util.List<MateriaResponseDto> obtenerMateriasConHorariosPorUsuario(@PathVariable Integer usuarioId) {
+    public List<MateriaPlannerResponseDto> obtenerMateriasConHorariosPorUsuario(@PathVariable Integer usuarioId) {
         return materiaService.obtenerMateriasConHorariosPorUsuario(usuarioId);
     }
 
