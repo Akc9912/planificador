@@ -1,4 +1,4 @@
-package aktech.planificador.DTO.auth;
+package aktech.planificador.Dto.auth;
 
 public class RegisterResponseDto {
     private String message;

@@ -1,4 +1,4 @@
-package aktech.planificador.DTO.usuarios;
+package aktech.planificador.Dto.usuarios;
 
 import aktech.planificador.Model.enums.DiaSemana;
 

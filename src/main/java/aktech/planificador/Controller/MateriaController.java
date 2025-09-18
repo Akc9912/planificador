@@ -1,10 +1,11 @@
 package aktech.planificador.Controller;
 
-import aktech.planificador.DTO.materia.MateriaRequestDto;
-import aktech.planificador.DTO.materia.MateriaResponseDto;
+import aktech.planificador.Dto.GenericResponseDto;
+import aktech.planificador.Dto.materia.HorarioMateriaRequestDto;
+import aktech.planificador.Dto.materia.MateriaRequestDto;
+import aktech.planificador.Dto.materia.MateriaResponseDto;
 import aktech.planificador.Service.core.MateriaService;
-import aktech.planificador.DTO.GenericResponseDto;
-import aktech.planificador.DTO.materia.HorarioMateriaRequestDto;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController

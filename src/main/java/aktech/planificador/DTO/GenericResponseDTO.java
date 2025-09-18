@@ -1,4 +1,4 @@
-package aktech.planificador.DTO;
+package aktech.planificador.Dto;
 
 public class GenericResponseDto {
     String message;

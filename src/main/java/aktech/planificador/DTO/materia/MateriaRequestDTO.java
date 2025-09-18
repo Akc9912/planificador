@@ -1,4 +1,4 @@
-package aktech.planificador.DTO.materia;
+package aktech.planificador.Dto.materia;
 
 import java.util.List;
 

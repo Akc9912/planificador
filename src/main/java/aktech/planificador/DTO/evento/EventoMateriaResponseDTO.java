@@ -1,4 +1,4 @@
-package aktech.planificador.DTO.evento;
+package aktech.planificador.Dto.evento;
 
 public class EventoMateriaResponseDto {
     private String message;

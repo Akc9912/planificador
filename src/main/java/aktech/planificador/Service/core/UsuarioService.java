@@ -1,8 +1,9 @@
 package aktech.planificador.Service.core;
 
 import org.springframework.stereotype.Service;
-import aktech.planificador.DTO.usuarios.UsuarioRequestDto;
-import aktech.planificador.DTO.usuarios.UsuarioResponseDto;
+
+import aktech.planificador.Dto.usuarios.UsuarioRequestDto;
+import aktech.planificador.Dto.usuarios.UsuarioResponseDto;
 import aktech.planificador.Model.core.NormalUser;
 import aktech.planificador.Model.core.Usuario;
 import aktech.planificador.Repository.core.UsuarioRepository;

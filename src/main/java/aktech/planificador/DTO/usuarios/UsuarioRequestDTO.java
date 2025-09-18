@@ -1,4 +1,4 @@
-package aktech.planificador.DTO.usuarios;
+package aktech.planificador.Dto.usuarios;
 
 public class UsuarioRequestDto {
     private String email;

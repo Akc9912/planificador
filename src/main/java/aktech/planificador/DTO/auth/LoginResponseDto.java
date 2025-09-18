@@ -1,7 +1,7 @@
-package aktech.planificador.DTO.auth;
+package aktech.planificador.Dto.auth;
 
-import aktech.planificador.DTO.usuarios.UserSettingsResponseDto;
-import aktech.planificador.DTO.usuarios.UsuarioResponseDto;
+import aktech.planificador.Dto.usuarios.UserSettingsResponseDto;
+import aktech.planificador.Dto.usuarios.UsuarioResponseDto;
 
 public class LoginResponseDto {
     private String token;

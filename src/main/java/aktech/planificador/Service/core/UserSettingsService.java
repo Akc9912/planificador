@@ -1,9 +1,10 @@
 package aktech.planificador.Service.core;
 
 import org.springframework.stereotype.Service;
-import aktech.planificador.DTO.usuarios.UserSettingsResponseDto;
+
 import aktech.planificador.Model.enums.Theme;
 import aktech.planificador.Repository.core.UserSettingsRepository;
+import aktech.planificador.Dto.usuarios.UserSettingsResponseDto;
 import aktech.planificador.Model.core.UserSettings;
 import aktech.planificador.Model.core.Usuario;
 import aktech.planificador.Model.enums.DiaSemana;

@@ -1,4 +1,4 @@
-package aktech.planificador.DTO.evento;
+package aktech.planificador.Dto.evento;
 
 public class EventoMateriaRequestDto {
     private Integer eventoId;

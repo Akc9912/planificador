@@ -1,7 +1,7 @@
 package aktech.planificador.Controller;
 
-import aktech.planificador.DTO.usuarios.UsuarioRequestDto;
-import aktech.planificador.DTO.usuarios.UsuarioResponseDto;
+import aktech.planificador.Dto.usuarios.UsuarioRequestDto;
+import aktech.planificador.Dto.usuarios.UsuarioResponseDto;
 import aktech.planificador.Service.core.UsuarioService;
 
 import org.springframework.web.bind.annotation.*;

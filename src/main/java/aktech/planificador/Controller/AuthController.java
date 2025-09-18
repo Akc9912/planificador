@@ -1,11 +1,11 @@
 package aktech.planificador.Controller;
 
-import aktech.planificador.DTO.auth.ChangePasswordRequestDto;
-import aktech.planificador.DTO.auth.ChangePasswordResponseDto;
-import aktech.planificador.DTO.auth.LoginRequestDto;
-import aktech.planificador.DTO.auth.LoginResponseDto;
-import aktech.planificador.DTO.auth.RegisterRequestDto;
-import aktech.planificador.DTO.auth.RegisterResponseDto;
+import aktech.planificador.Dto.auth.ChangePasswordRequestDto;
+import aktech.planificador.Dto.auth.ChangePasswordResponseDto;
+import aktech.planificador.Dto.auth.LoginRequestDto;
+import aktech.planificador.Dto.auth.LoginResponseDto;
+import aktech.planificador.Dto.auth.RegisterRequestDto;
+import aktech.planificador.Dto.auth.RegisterResponseDto;
 import aktech.planificador.Service.auth.AuthService;
 
 import org.springframework.beans.factory.annotation.Autowired;

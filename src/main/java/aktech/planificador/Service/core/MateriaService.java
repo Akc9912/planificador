@@ -1,18 +1,17 @@
 package aktech.planificador.Service.core;
 
-import aktech.planificador.DTO.materia.HorarioMateriaRequestDto;
 import aktech.planificador.Model.enums.DiaSemana;
 import aktech.planificador.Model.historial.HorarioPorMateria;
 import aktech.planificador.Repository.historial.HorarioPorMateriaRepository;
-
+import aktech.planificador.Dto.GenericResponseDto;
+import aktech.planificador.Dto.materia.HorarioMateriaRequestDto;
+import aktech.planificador.Dto.materia.MateriaRequestDto;
+import aktech.planificador.Dto.materia.MateriaResponseDto;
 import aktech.planificador.Model.core.Materia;
 import aktech.planificador.Model.core.Usuario;
 import aktech.planificador.Model.enums.EstadoMateria;
 import aktech.planificador.Repository.core.MateriaRepository;
 import aktech.planificador.Repository.core.UsuarioRepository;
-import aktech.planificador.DTO.materia.MateriaRequestDto;
-import aktech.planificador.DTO.materia.MateriaResponseDto;
-import aktech.planificador.DTO.GenericResponseDto;
 
 import org.springframework.stereotype.Service;
 
