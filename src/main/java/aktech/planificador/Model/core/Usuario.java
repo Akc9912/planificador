@@ -53,7 +53,7 @@ public abstract class Usuario implements UserDetails {
         this.rol = rol;
         this.activo = true;
         this.cambiarPass = false;
-        this.emailVerified = false;
+        this.emailVerified = true;
     }
 
     public Integer getId() {
