@@ -1,14 +1,14 @@
 package aktech.planificador.DTO.materia;
 
-public class HorarioMateriaRequest {
+public class HorarioMateriaRequestDto {
     private String dia;
     private String horaInicio;
     private String horaFin;
 
-    public HorarioMateriaRequest() {
+    public HorarioMateriaRequestDto() {
     }
 
-    public HorarioMateriaRequest(String dia, String horaInicio, String horaFin) {
+    public HorarioMateriaRequestDto(String dia, String horaInicio, String horaFin) {
         this.dia = dia;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;

@@ -1,10 +1,10 @@
 package aktech.planificador.DTO.auth;
 
-public class RegisterResponseDTO {
+public class RegisterResponseDto {
     private String message;
     private boolean success;
 
-    public RegisterResponseDTO(String message, boolean success) {
+    public RegisterResponseDto(String message, boolean success) {
         this.message = message;
         this.success = success;
     }

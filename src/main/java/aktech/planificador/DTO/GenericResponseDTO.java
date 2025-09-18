@@ -1,16 +1,8 @@
 package aktech.planificador.DTO;
 
-public class GenericResponseDTO {
+public class GenericResponseDto {
     String message;
     boolean success;
-
-    public GenericResponseDTO() {
-    }
-
-    public GenericResponseDTO(String message, boolean success) {
-        this.message = message;
-        this.success = success;
-    }
 
     public String getMessage() {
         return message;

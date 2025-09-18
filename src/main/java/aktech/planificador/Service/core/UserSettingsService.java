@@ -1,14 +1,12 @@
 package aktech.planificador.Service.core;
 
 import org.springframework.stereotype.Service;
-import aktech.planificador.DTO.usuarios.UserSettingsResponseDTO;
+import aktech.planificador.DTO.usuarios.UserSettingsResponseDto;
 import aktech.planificador.Model.enums.Theme;
 import aktech.planificador.Repository.core.UserSettingsRepository;
 import aktech.planificador.Model.core.UserSettings;
 import aktech.planificador.Model.core.Usuario;
 import aktech.planificador.Model.enums.DiaSemana;
-import java.util.Optional;
-import java.util.List;
 
 @Service
 public class UserSettingsService {
@@ -30,8 +28,8 @@ public class UserSettingsService {
         return settings;
     }
 
-    public UserSettingsResponseDTO mapToDto(UserSettings settings) {
-        UserSettingsResponseDTO dto = new UserSettingsResponseDTO();
+    public UserSettingsResponseDto mapToDto(UserSettings settings) {
+        UserSettingsResponseDto dto = new UserSettingsResponseDto();
         dto.setId(settings.getId());
         dto.setTheme(settings.getTheme().toString());
         dto.setNotificaciones(settings.getNotificaciones());

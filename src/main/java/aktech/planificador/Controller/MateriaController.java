@@ -1,10 +1,10 @@
 package aktech.planificador.Controller;
 
-import aktech.planificador.DTO.materia.MateriaRequestDTO;
-import aktech.planificador.DTO.materia.MateriaResponseDTO;
+import aktech.planificador.DTO.materia.MateriaRequestDto;
+import aktech.planificador.DTO.materia.MateriaResponseDto;
 import aktech.planificador.Service.core.MateriaService;
-import aktech.planificador.DTO.GenericResponseDTO;
-import aktech.planificador.DTO.materia.HorarioMateriaRequest;
+import aktech.planificador.DTO.GenericResponseDto;
+import aktech.planificador.DTO.materia.HorarioMateriaRequestDto;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,38 +18,38 @@ public class MateriaController {
 
     // Crear materia
     @PostMapping("/crear")
-    public GenericResponseDTO crearMateria(@RequestBody MateriaRequestDTO request) {
+    public GenericResponseDto crearMateria(@RequestBody MateriaRequestDto request) {
         return materiaService.crearMateria(request);
     }
 
     // Modificar materia
     @PutMapping("/modificar/{id}")
-    public GenericResponseDTO modificarMateria(@PathVariable Integer id, @RequestBody MateriaRequestDTO request) {
+    public GenericResponseDto modificarMateria(@PathVariable Integer id, @RequestBody MateriaRequestDto request) {
         return materiaService.modificarMateria(id, request);
     }
 
     // Eliminar materia
     @DeleteMapping("/eliminar/{id}")
-    public GenericResponseDTO eliminarMateria(@PathVariable Integer id) {
+    public GenericResponseDto eliminarMateria(@PathVariable Integer id) {
         return materiaService.eliminarMateria(id);
     }
 
     // Obtener materias por usuario
     @GetMapping("/usuario/{usuarioId}")
-    public java.util.List<MateriaResponseDTO> obtenerMateriasPorUsuario(@PathVariable Integer usuarioId) {
+    public java.util.List<MateriaResponseDto> obtenerMateriasPorUsuario(@PathVariable Integer usuarioId) {
         return materiaService.obtenerMateriasPorUsuario(usuarioId);
     }
 
     // Obtener materias con horarios por usuario
     @GetMapping("/usuario/{usuarioId}/con-horarios")
-    public java.util.List<MateriaResponseDTO> obtenerMateriasConHorariosPorUsuario(@PathVariable Integer usuarioId) {
+    public java.util.List<MateriaResponseDto> obtenerMateriasConHorariosPorUsuario(@PathVariable Integer usuarioId) {
         return materiaService.obtenerMateriasConHorariosPorUsuario(usuarioId);
     }
 
     // Agregar horarios a una materia
     @PostMapping("/{materiaId}/horarios")
-    public GenericResponseDTO agregarHorariosAMateria(@PathVariable Integer materiaId,
-            @RequestBody java.util.List<HorarioMateriaRequest> horariosRequest) {
+    public GenericResponseDto agregarHorariosAMateria(@PathVariable Integer materiaId,
+            @RequestBody java.util.List<HorarioMateriaRequestDto> horariosRequest) {
         return materiaService.agregarHorariosAMateria(materiaId, horariosRequest);
     }
 }

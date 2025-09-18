@@ -1,6 +1,6 @@
 package aktech.planificador.Service.core;
 
-import aktech.planificador.DTO.materia.HorarioMateriaRequest;
+import aktech.planificador.DTO.materia.HorarioMateriaRequestDto;
 import aktech.planificador.Model.enums.DiaSemana;
 import aktech.planificador.Model.historial.HorarioPorMateria;
 import aktech.planificador.Repository.historial.HorarioPorMateriaRepository;
@@ -10,9 +10,9 @@ import aktech.planificador.Model.core.Usuario;
 import aktech.planificador.Model.enums.EstadoMateria;
 import aktech.planificador.Repository.core.MateriaRepository;
 import aktech.planificador.Repository.core.UsuarioRepository;
-import aktech.planificador.DTO.materia.MateriaRequestDTO;
-import aktech.planificador.DTO.materia.MateriaResponseDTO;
-import aktech.planificador.DTO.GenericResponseDTO;
+import aktech.planificador.DTO.materia.MateriaRequestDto;
+import aktech.planificador.DTO.materia.MateriaResponseDto;
+import aktech.planificador.DTO.GenericResponseDto;
 
 import org.springframework.stereotype.Service;
 
@@ -33,25 +33,36 @@ public class MateriaService {
         this.horarioRepository = horarioRepository;
     }
 
-    public GenericResponseDTO crearMateria(MateriaRequestDTO request) {
+    public GenericResponseDto crearMateria(MateriaRequestDto request) {
         try {
+            GenericResponseDto response = new GenericResponseDto();
             // Validar datos obligatorios
             if (request.getUsuarioId() == null) {
-                return new GenericResponseDTO("El usuario es obligatorio", false);
+                response.setMessage("El usuario es obligatorio");
+                response.setSuccess(false);
+                return response;
             }
             if (request.getTitulo() == null || request.getTitulo().isEmpty()) {
-                return new GenericResponseDTO("El título es obligatorio", false);
+                response.setMessage("El título es obligatorio");
+                response.setSuccess(false);
+                return response;
             }
             if (request.getColor() == null || request.getColor().isEmpty()) {
-                return new GenericResponseDTO("El color es obligatorio", false);
+                response.setMessage("El color es obligatorio");
+                response.setSuccess(false);
+                return response;
             }
             if (request.getEstado() == null) {
-                return new GenericResponseDTO("El estado es obligatorio", false);
+                response.setMessage("El estado es obligatorio");
+                response.setSuccess(false);
+                return response;
             }
 
             Optional<Usuario> usuarioOpt = usuarioRepository.findById(request.getUsuarioId());
             if (usuarioOpt.isEmpty()) {
-                return new GenericResponseDTO("Usuario no encontrado", false);
+                response.setMessage("Usuario no encontrado");
+                response.setSuccess(false);
+                return response;
             }
 
             Materia materia = new Materia();
@@ -69,7 +80,7 @@ public class MateriaService {
 
             // Crear horarios si vienen en el request
             if (request.getHorarios() != null && !request.getHorarios().isEmpty()) {
-                for (HorarioMateriaRequest horarioReq : request.getHorarios()) {
+                for (HorarioMateriaRequestDto horarioReq : request.getHorarios()) {
                     HorarioPorMateria horario = new HorarioPorMateria();
                     horario.setMateria(materia);
                     horario.setDia(DiaSemana.valueOf(horarioReq.getDia().toUpperCase()));
@@ -78,17 +89,25 @@ public class MateriaService {
                     horarioRepository.save(horario);
                 }
             }
-            return new GenericResponseDTO("Materia creada exitosamente", true);
+            response.setMessage("Materia creada exitosamente");
+            response.setSuccess(true);
+            return response;
         } catch (Exception e) {
-            return new GenericResponseDTO("Error al crear la materia: " + e.getMessage(), false);
+            GenericResponseDto response = new GenericResponseDto();
+            response.setMessage("Error al crear la materia: " + e.getMessage());
+            response.setSuccess(false);
+            return response;
         }
     }
 
-    public GenericResponseDTO modificarMateria(Integer id, MateriaRequestDTO request) {
+    public GenericResponseDto modificarMateria(Integer id, MateriaRequestDto request) {
         try {
+            GenericResponseDto response = new GenericResponseDto();
             Optional<Materia> materiaOpt = materiaRepository.findById(id);
             if (materiaOpt.isEmpty()) {
-                return new GenericResponseDTO("Materia no encontrada", false);
+                response.setMessage("Materia no encontrada");
+                response.setSuccess(false);
+                return response;
             }
             Materia materia = materiaOpt.get();
 
@@ -114,26 +133,39 @@ public class MateriaService {
             }
 
             materiaRepository.save(materia);
-            return new GenericResponseDTO("Materia modificada exitosamente", true);
+            response.setMessage("Materia modificada exitosamente");
+            response.setSuccess(true);
+            return response;
         } catch (Exception e) {
-            return new GenericResponseDTO("Error al modificar la materia: " + e.getMessage(), false);
+            GenericResponseDto response = new GenericResponseDto();
+            response.setMessage("Error al modificar la materia: " + e.getMessage());
+            response.setSuccess(false);
+            return response;
         }
     }
 
-    public GenericResponseDTO eliminarMateria(Integer id) {
+    public GenericResponseDto eliminarMateria(Integer id) {
         try {
+            GenericResponseDto response = new GenericResponseDto();
             if (!materiaRepository.existsById(id)) {
-                return new GenericResponseDTO("Materia no encontrada", false);
+                response.setMessage("Materia no encontrada");
+                response.setSuccess(false);
+                return response;
             }
             materiaRepository.deleteById(id);
-            return new GenericResponseDTO("Materia eliminada exitosamente", true);
+            response.setMessage("Materia eliminada exitosamente");
+            response.setSuccess(true);
+            return response;
         } catch (Exception e) {
-            return new GenericResponseDTO("Error al eliminar la materia: " + e.getMessage(), false);
+            GenericResponseDto response = new GenericResponseDto();
+            response.setMessage("Error al eliminar la materia: " + e.getMessage());
+            response.setSuccess(false);
+            return response;
         }
     }
 
     // obtener lista de materias por usuario
-    public List<MateriaResponseDTO> obtenerMateriasPorUsuario(Integer usuarioId) {
+    public List<MateriaResponseDto> obtenerMateriasPorUsuario(Integer usuarioId) {
         try {
             if (usuarioId == null) {
                 return List.of();
@@ -144,7 +176,7 @@ public class MateriaService {
             }
             List<Materia> materias = materiaRepository.findByUsuarioId(usuarioId);
             return materias.stream()
-                    .map(m -> new MateriaResponseDTO(m, null))
+                    .map(m -> new MateriaResponseDto(m, null))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             return List.of();
@@ -152,17 +184,23 @@ public class MateriaService {
     }
 
     // Agregar uno o varios horarios a una materia existente
-    public GenericResponseDTO agregarHorariosAMateria(Integer materiaId, List<HorarioMateriaRequest> horariosRequest) {
+    public GenericResponseDto agregarHorariosAMateria(Integer materiaId,
+            List<HorarioMateriaRequestDto> horariosRequest) {
         try {
+            GenericResponseDto response = new GenericResponseDto();
             Optional<Materia> materiaOpt = materiaRepository.findById(materiaId);
             if (materiaOpt.isEmpty()) {
-                return new GenericResponseDTO("Materia no encontrada", false);
+                response.setMessage("Materia no encontrada");
+                response.setSuccess(false);
+                return response;
             }
             Materia materia = materiaOpt.get();
             if (horariosRequest == null || horariosRequest.isEmpty()) {
-                return new GenericResponseDTO("No se recibieron horarios para agregar", false);
+                response.setMessage("No se recibieron horarios para agregar");
+                response.setSuccess(false);
+                return response;
             }
-            for (HorarioMateriaRequest req : horariosRequest) {
+            for (HorarioMateriaRequestDto req : horariosRequest) {
                 HorarioPorMateria horario = new HorarioPorMateria();
                 horario.setMateria(materia);
                 horario.setDia(DiaSemana.valueOf(req.getDia().toUpperCase()));
@@ -170,15 +208,20 @@ public class MateriaService {
                 horario.setHoraFin(java.time.LocalTime.parse(req.getHoraFin()));
                 horarioRepository.save(horario);
             }
-            return new GenericResponseDTO("Horarios agregados exitosamente", true);
+            response.setMessage("Horarios agregados exitosamente");
+            response.setSuccess(true);
+            return response;
         } catch (Exception e) {
-            return new GenericResponseDTO("Error al agregar horarios: " + e.getMessage(), false);
+            GenericResponseDto response = new GenericResponseDto();
+            response.setMessage("Error al agregar horarios: " + e.getMessage());
+            response.setSuccess(false);
+            return response;
         }
     }
 
     // lista de materias con horario, para el planificador (si una materia tiene
     // varios horarios, se repite la materia en cada horario)
-    public List<MateriaResponseDTO> obtenerMateriasConHorariosPorUsuario(Integer usuarioId) {
+    public List<MateriaResponseDto> obtenerMateriasConHorariosPorUsuario(Integer usuarioId) {
         try {
             if (usuarioId == null) {
                 return List.of();
@@ -191,7 +234,7 @@ public class MateriaService {
             return materias.stream()
                     .map(m -> {
                         List<HorarioPorMateria> horarios = horarioRepository.findByMateriaId(m.getId());
-                        return new MateriaResponseDTO(m, horarios);
+                        return new MateriaResponseDto(m, horarios);
                     })
                     .collect(Collectors.toList());
         } catch (Exception e) {

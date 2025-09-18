@@ -1,7 +1,7 @@
 package aktech.planificador.Controller;
 
-import aktech.planificador.DTO.usuarios.UsuarioRequestDTO;
-import aktech.planificador.DTO.usuarios.UsuarioResponseDTO;
+import aktech.planificador.DTO.usuarios.UsuarioRequestDto;
+import aktech.planificador.DTO.usuarios.UsuarioResponseDto;
 import aktech.planificador.Service.core.UsuarioService;
 
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +18,12 @@ public class UsuarioController {
     }
 
     @PostMapping(path = "/crear")
-    public UsuarioResponseDTO crearUsuario(@RequestBody UsuarioRequestDTO dto) {
+    public UsuarioResponseDto crearUsuario(@RequestBody UsuarioRequestDto dto) {
         return usuarioService.createUsuario(dto);
     }
 
     @PutMapping(path = "/actualizar/{id}")
-    public UsuarioResponseDTO actualizarUsuario(@PathVariable Integer id, @RequestBody UsuarioRequestDTO dto) {
+    public UsuarioResponseDto actualizarUsuario(@PathVariable Integer id, @RequestBody UsuarioRequestDto dto) {
         return usuarioService.updateUsuario(id, dto);
     }
 

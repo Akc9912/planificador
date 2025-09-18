@@ -1,6 +1,6 @@
 package aktech.planificador.DTO.evento;
 
-public class EventoMateriaRequestDTO {
+public class EventoMateriaRequestDto {
     private Integer eventoId;
     private Integer materiaId;
 

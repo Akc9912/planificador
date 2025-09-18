@@ -2,7 +2,7 @@ package aktech.planificador.DTO.materia;
 
 import java.util.List;
 
-public class MateriaRequestDTO {
+public class MateriaRequestDto {
     private Integer usuarioId;
     private String titulo;
     private String color;
@@ -10,28 +10,13 @@ public class MateriaRequestDTO {
     private Double notaPromocion;
     private Double calificacion;
     private String estado;
-    private List<HorarioMateriaRequest> horarios;
+    private List<HorarioMateriaRequestDto> horarios;
 
-    public MateriaRequestDTO() {
-    }
-
-    public MateriaRequestDTO(Integer usuarioId, String titulo, String color, boolean promocionable,
-            Double notaPromocion, Double calificacion, String estado, List<HorarioMateriaRequest> horarios) {
-        this.usuarioId = usuarioId;
-        this.titulo = titulo;
-        this.color = color;
-        this.promocionable = promocionable;
-        this.notaPromocion = notaPromocion;
-        this.calificacion = calificacion;
-        this.estado = estado;
-        this.horarios = horarios;
-    }
-
-    public List<HorarioMateriaRequest> getHorarios() {
+    public List<HorarioMateriaRequestDto> getHorarios() {
         return horarios;
     }
 
-    public void setHorarios(List<HorarioMateriaRequest> horarios) {
+    public void setHorarios(List<HorarioMateriaRequestDto> horarios) {
         this.horarios = horarios;
     }
 

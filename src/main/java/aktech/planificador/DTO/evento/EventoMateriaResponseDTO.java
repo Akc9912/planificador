@@ -1,10 +1,10 @@
 package aktech.planificador.DTO.evento;
 
-public class EventoMateriaResponseDTO {
+public class EventoMateriaResponseDto {
     private String message;
     private boolean success;
 
-    public EventoMateriaResponseDTO(String message, boolean success) {
+    public EventoMateriaResponseDto(String message, boolean success) {
         this.message = message;
         this.success = success;
     }

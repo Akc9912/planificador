@@ -5,11 +5,11 @@ import java.util.List;
 import aktech.planificador.Model.core.Materia;
 import aktech.planificador.Model.historial.HorarioPorMateria;
 
-public class MateriaResponseDTO {
+public class MateriaResponseDto {
     private Materia materia;
     private List<HorarioPorMateria> horarios;
 
-    public MateriaResponseDTO(Materia materia, List<HorarioPorMateria> horarios) {
+    public MateriaResponseDto(Materia materia, List<HorarioPorMateria> horarios) {
         this.materia = materia;
         this.horarios = horarios;
     }

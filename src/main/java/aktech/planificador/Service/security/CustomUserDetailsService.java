@@ -1,6 +1,5 @@
 package aktech.planificador.Service.security;
 
-import aktech.planificador.Model.core.Usuario;
 import aktech.planificador.Repository.core.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

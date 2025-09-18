@@ -1,6 +1,6 @@
 package aktech.planificador.DTO.usuarios;
 
-public class UsuarioResponseDTO {
+public class UsuarioResponseDto {
     private Integer id;
     private String email;
     private String nombre;

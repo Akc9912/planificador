@@ -1,9 +1,8 @@
 package aktech.planificador.Service.core;
 
 import org.springframework.stereotype.Service;
-import aktech.planificador.DTO.usuarios.UsuarioRequestDTO;
-import aktech.planificador.DTO.usuarios.UsuarioResponseDTO;
-import aktech.planificador.Model.core.Admin;
+import aktech.planificador.DTO.usuarios.UsuarioRequestDto;
+import aktech.planificador.DTO.usuarios.UsuarioResponseDto;
 import aktech.planificador.Model.core.NormalUser;
 import aktech.planificador.Model.core.Usuario;
 import aktech.planificador.Repository.core.UsuarioRepository;
@@ -16,8 +15,8 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public UsuarioResponseDTO mapToDto(Usuario user) {
-        UsuarioResponseDTO dto = new UsuarioResponseDTO();
+    public UsuarioResponseDto mapToDto(Usuario user) {
+        UsuarioResponseDto dto = new UsuarioResponseDto();
         dto.setId(user.getId());
         dto.setEmail(user.getEmail());
         dto.setNombre(user.getNombre());
@@ -31,7 +30,7 @@ public class UsuarioService {
 
     // crear usuarios (para admin)
 
-    public UsuarioResponseDTO createUsuario(UsuarioRequestDTO dto) {
+    public UsuarioResponseDto createUsuario(UsuarioRequestDto dto) {
         if (dto.getEmail() == null || dto.getEmail().isEmpty() ||
                 dto.getNombre() == null || dto.getNombre().isEmpty() ||
                 dto.getApellido() == null || dto.getApellido().isEmpty()) {
@@ -58,7 +57,7 @@ public class UsuarioService {
     }
 
     // crear usuario (para auth, registro por el mismo usuario)
-    public UsuarioResponseDTO createUsuario(Usuario user) {
+    public UsuarioResponseDto createUsuario(Usuario user) {
         if (user.getEmail() == null || user.getEmail().isEmpty() ||
                 user.getPasswordHash() == null || user.getPasswordHash().isEmpty() ||
                 user.getNombre() == null || user.getNombre().isEmpty() ||
@@ -80,7 +79,7 @@ public class UsuarioService {
     }
 
     // actualizar usuario para normal y admin
-    public UsuarioResponseDTO updateUsuario(Integer id, UsuarioRequestDTO dto) {
+    public UsuarioResponseDto updateUsuario(Integer id, UsuarioRequestDto dto) {
         Usuario existingUser = usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id: " + id));
 

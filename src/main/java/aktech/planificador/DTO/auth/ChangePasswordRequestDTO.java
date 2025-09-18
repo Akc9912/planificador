@@ -1,6 +1,6 @@
 package aktech.planificador.DTO.auth;
 
-public class ChangePasswordRequestDTO {
+public class ChangePasswordRequestDto {
     private String email;
     private String oldPassword;
     private String newPassword;

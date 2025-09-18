@@ -1,6 +1,6 @@
 package aktech.planificador.DTO.auth;
 
-public class RegisterRequestDTO {
+public class RegisterRequestDto {
     private String email;
     private String password;
     private String nombre;

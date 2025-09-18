@@ -1,13 +1,13 @@
 package aktech.planificador.DTO.auth;
 
-public class ChangePasswordResponseDTO {
+public class ChangePasswordResponseDto {
     private String message;
     private boolean success;
 
-    public ChangePasswordResponseDTO() {
+    public ChangePasswordResponseDto() {
     }
 
-    public ChangePasswordResponseDTO(String message, boolean success) {
+    public ChangePasswordResponseDto(String message, boolean success) {
         this.message = message;
         this.success = success;
     }

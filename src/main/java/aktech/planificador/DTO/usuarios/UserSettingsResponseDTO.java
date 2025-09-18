@@ -2,7 +2,7 @@ package aktech.planificador.DTO.usuarios;
 
 import aktech.planificador.Model.enums.DiaSemana;
 
-public class UserSettingsResponseDTO {
+public class UserSettingsResponseDto {
     private Integer id;
     private String theme;
     private Boolean notificaciones;

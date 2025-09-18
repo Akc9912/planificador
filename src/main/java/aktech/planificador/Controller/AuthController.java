@@ -1,11 +1,11 @@
 package aktech.planificador.Controller;
 
-import aktech.planificador.DTO.auth.ChangePasswordRequestDTO;
-import aktech.planificador.DTO.auth.ChangePasswordResponseDTO;
-import aktech.planificador.DTO.auth.LoginRequestDTO;
-import aktech.planificador.DTO.auth.LoginResponseDTO;
-import aktech.planificador.DTO.auth.RegisterRequestDTO;
-import aktech.planificador.DTO.auth.RegisterResponseDTO;
+import aktech.planificador.DTO.auth.ChangePasswordRequestDto;
+import aktech.planificador.DTO.auth.ChangePasswordResponseDto;
+import aktech.planificador.DTO.auth.LoginRequestDto;
+import aktech.planificador.DTO.auth.LoginResponseDto;
+import aktech.planificador.DTO.auth.RegisterRequestDto;
+import aktech.planificador.DTO.auth.RegisterResponseDto;
 import aktech.planificador.Service.auth.AuthService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +18,17 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public LoginResponseDTO login(@RequestBody LoginRequestDTO request) {
+    public LoginResponseDto login(@RequestBody LoginRequestDto request) {
         return authService.login(request);
     }
 
     @PostMapping("/register")
-    public RegisterResponseDTO register(@RequestBody RegisterRequestDTO request) {
+    public RegisterResponseDto register(@RequestBody RegisterRequestDto request) {
         return authService.register(request);
     }
 
     @PutMapping("/change-password")
-    public ChangePasswordResponseDTO changePassword(@RequestBody ChangePasswordRequestDTO request) {
+    public ChangePasswordResponseDto changePassword(@RequestBody ChangePasswordRequestDto request) {
         return authService.changePassword(request);
     }
 }
