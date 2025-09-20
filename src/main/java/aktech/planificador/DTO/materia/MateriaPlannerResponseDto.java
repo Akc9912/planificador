@@ -3,7 +3,6 @@ package aktech.planificador.Dto.materia;
 import java.time.LocalTime;
 
 import aktech.planificador.Model.enums.DiaSemana;
-import aktech.planificador.Model.historial.HorarioPorMateria;
 
 public class MateriaPlannerResponseDto {
     private String titulo;

@@ -8,6 +8,7 @@ import aktech.planificador.Dto.materia.HorarioMateriaRequestDto;
 import aktech.planificador.Dto.materia.MateriaRequestDto;
 import aktech.planificador.Dto.materia.MateriaResponseDto;
 import aktech.planificador.Dto.materia.MateriaPlannerResponseDto;
+import aktech.planificador.Dto.materia.HorarioMateriaResponseDto;
 import aktech.planificador.Model.core.Materia;
 import aktech.planificador.Model.core.Usuario;
 import aktech.planificador.Model.enums.EstadoMateria;
@@ -179,7 +180,23 @@ public class MateriaService {
             return materias.stream()
                     .map(m -> {
                         List<HorarioPorMateria> horarios = horarioRepository.findByMateriaId(m.getId());
-                        return new MateriaResponseDto(m, horarios);
+                        List<HorarioMateriaResponseDto> horariosDto = horarios.stream().map(h -> {
+                            HorarioMateriaResponseDto dto = new HorarioMateriaResponseDto();
+                            dto.setDia(h.getDia().toString());
+                            dto.setHoraInicio(h.getHoraInicio() != null ? h.getHoraInicio().toString() : null);
+                            dto.setHoraFin(h.getHoraFin() != null ? h.getHoraFin().toString() : null);
+                            return dto;
+                        }).collect(Collectors.toList());
+                        MateriaResponseDto materiaDto = new MateriaResponseDto();
+                        materiaDto.setId(m.getId());
+                        materiaDto.setTitulo(m.getTitulo());
+                        materiaDto.setEstado(m.getEstado() != null ? m.getEstado().toString() : null);
+                        materiaDto.setColor(m.getColor());
+                        materiaDto.setPromocionable(m.getPromocionable() != null ? m.getPromocionable() : false);
+                        materiaDto.setNotaPromocion(m.getNotaPromocion());
+                        materiaDto.setCalificacion(m.getCalificacion());
+                        materiaDto.setHorarios(horariosDto);
+                        return materiaDto;
                     })
                     .collect(Collectors.toList());
         } catch (Exception e) {

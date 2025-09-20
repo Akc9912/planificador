@@ -2,31 +2,78 @@ package aktech.planificador.Dto.materia;
 
 import java.util.List;
 
-import aktech.planificador.Model.core.Materia;
-import aktech.planificador.Model.historial.HorarioPorMateria;
-
 public class MateriaResponseDto {
-    private Materia materia;
-    private List<HorarioPorMateria> horarios;
+    private Integer id;
+    private String titulo;
+    private String estado;
+    private String color;
+    private boolean promocionable;
+    private Double notaPromocion;
+    private Double calificacion;
+    private List<HorarioMateriaResponseDto> horarios;
 
-    public MateriaResponseDto(Materia materia, List<HorarioPorMateria> horarios) {
-        this.materia = materia;
-        this.horarios = horarios;
+    // getters y setters
+    public Integer getId() {
+        return id;
     }
 
-    public Materia getMateria() {
-        return materia;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public List<HorarioPorMateria> getHorarios() {
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public boolean isPromocionable() {
+        return promocionable;
+    }
+
+    public void setPromocionable(boolean promocionable) {
+        this.promocionable = promocionable;
+    }
+
+    public Double getNotaPromocion() {
+        return notaPromocion;
+    }
+
+    public void setNotaPromocion(Double notaPromocion) {
+        this.notaPromocion = notaPromocion;
+    }
+
+    public Double getCalificacion() {
+        return calificacion;
+    }
+
+    public void setCalificacion(Double calificacion) {
+        this.calificacion = calificacion;
+    }
+
+    public List<HorarioMateriaResponseDto> getHorarios() {
         return horarios;
     }
 
-    public void setHorarios(List<HorarioPorMateria> horarios) {
+    public void setHorarios(List<HorarioMateriaResponseDto> horarios) {
         this.horarios = horarios;
-    }
-
-    public void setMateria(Materia materia) {
-        this.materia = materia;
     }
 }
