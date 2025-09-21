@@ -31,6 +31,7 @@ public class UsuarioService {
 
     // crear usuarios (para admin)
 
+    @org.springframework.transaction.annotation.Transactional
     public UsuarioResponseDto createUsuario(UsuarioRequestDto dto) {
         if (dto.getEmail() == null || dto.getEmail().isEmpty() ||
                 dto.getNombre() == null || dto.getNombre().isEmpty() ||
@@ -58,6 +59,7 @@ public class UsuarioService {
     }
 
     // crear usuario (para auth, registro por el mismo usuario)
+    @org.springframework.transaction.annotation.Transactional
     public UsuarioResponseDto createUsuario(Usuario user) {
         if (user.getEmail() == null || user.getEmail().isEmpty() ||
                 user.getPasswordHash() == null || user.getPasswordHash().isEmpty() ||
@@ -80,6 +82,7 @@ public class UsuarioService {
     }
 
     // actualizar usuario para normal y admin
+    @org.springframework.transaction.annotation.Transactional
     public UsuarioResponseDto updateUsuario(Integer id, UsuarioRequestDto dto) {
         Usuario existingUser = usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id: " + id));
@@ -104,6 +107,7 @@ public class UsuarioService {
     }
 
     // baja usuario (solo desactivar)
+    @org.springframework.transaction.annotation.Transactional
     public boolean deleteUsuario(Integer id) {
         Usuario existingUser = usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id: " + id));

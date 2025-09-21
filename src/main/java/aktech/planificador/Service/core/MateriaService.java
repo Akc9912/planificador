@@ -36,6 +36,7 @@ public class MateriaService {
         this.horarioRepository = horarioRepository;
     }
 
+    @Transactional
     public GenericResponseDto crearMateria(MateriaRequestDto request) {
         try {
             GenericResponseDto response = new GenericResponseDto();
@@ -172,6 +173,7 @@ public class MateriaService {
         }
     }
 
+    @Transactional
     public GenericResponseDto eliminarMateria(Integer idMateria, Integer usuarioId) {
         try {
             GenericResponseDto response = new GenericResponseDto();

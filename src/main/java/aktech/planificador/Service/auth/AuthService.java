@@ -111,6 +111,7 @@ public class AuthService {
         }
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public RegisterResponseDto register(RegisterRequestDto request) {
         // Validar campos requeridos
         if (request.getEmail() == null || request.getEmail().isEmpty() ||
@@ -147,6 +148,7 @@ public class AuthService {
     }
 
 
+    @org.springframework.transaction.annotation.Transactional
     public ChangePasswordResponseDto changePassword(ChangePasswordRequestDto request) {
         if (request.getEmail() == null || request.getEmail().isEmpty() ||
                 request.getOldPassword() == null || request.getOldPassword().isEmpty() ||
