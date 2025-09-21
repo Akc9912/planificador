@@ -28,15 +28,15 @@ public class MateriaController {
 
     // Modificar materia
     @PutMapping("/modificar/{id}")
-    public GenericResponseDto modificarMateria(@PathVariable("id") Integer idMateria,
+    public GenericResponseDto modificarMateria(@PathVariable Integer id,
             @RequestBody MateriaRequestDto request) {
-        return materiaService.modificarMateria(idMateria, request);
+        return materiaService.modificarMateria(id, request);
     }
 
     // Eliminar materia
     @DeleteMapping("/eliminar/{id}")
-    public GenericResponseDto eliminarMateria(@PathVariable Integer idMateria, @RequestParam Integer usuarioId) {
-        return materiaService.eliminarMateria(idMateria, usuarioId);
+    public GenericResponseDto eliminarMateria(@PathVariable Integer id, @RequestParam Integer usuarioId) {
+        return materiaService.eliminarMateria(id, usuarioId);
     }
 
     // Obtener materias por usuario
