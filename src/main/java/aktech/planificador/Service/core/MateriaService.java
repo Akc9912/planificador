@@ -16,6 +16,7 @@ import aktech.planificador.Repository.core.MateriaRepository;
 import aktech.planificador.Repository.core.UsuarioRepository;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -102,6 +103,7 @@ public class MateriaService {
         }
     }
 
+    @Transactional
     public GenericResponseDto modificarMateria(Integer idMateria, MateriaRequestDto request) {
         try {
             GenericResponseDto response = new GenericResponseDto();
@@ -142,6 +144,22 @@ public class MateriaService {
                 materia.setNotaPromocion(request.getNotaPromocion());
             }
 
+            // Actualizar horarios: eliminar los existentes y agregar los nuevos del request
+            List<HorarioPorMateria> horariosActuales = horarioRepository.findByMateriaId(materia.getId());
+            for (HorarioPorMateria h : horariosActuales) {
+                horarioRepository.delete(h);
+            }
+            if (request.getHorarios() != null && !request.getHorarios().isEmpty()) {
+                for (HorarioMateriaRequestDto horarioReq : request.getHorarios()) {
+                    HorarioPorMateria horario = new HorarioPorMateria();
+                    horario.setMateria(materia);
+                    horario.setDia(
+                            aktech.planificador.Model.enums.DiaSemana.valueOf(horarioReq.getDia().toUpperCase()));
+                    horario.setHoraInicio(java.time.LocalTime.parse(horarioReq.getHoraInicio()));
+                    horario.setHoraFin(java.time.LocalTime.parse(horarioReq.getHoraFin()));
+                    horarioRepository.save(horario);
+                }
+            }
             materiaRepository.save(materia);
             response.setMessage("Materia modificada exitosamente");
             response.setSuccess(true);
@@ -171,6 +189,12 @@ public class MateriaService {
                 response.setSuccess(false);
                 return response;
             }
+            // Eliminar horarios asociados
+            List<HorarioPorMateria> horarios = horarioRepository.findByMateriaId(materia.getId());
+            for (HorarioPorMateria h : horarios) {
+                horarioRepository.delete(h);
+            }
+            // Delete permanente
             materiaRepository.deleteById(idMateria);
             response.setMessage("Materia eliminada exitosamente");
             response.setSuccess(true);
