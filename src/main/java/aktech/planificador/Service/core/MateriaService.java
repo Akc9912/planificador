@@ -102,16 +102,24 @@ public class MateriaService {
         }
     }
 
-    public GenericResponseDto modificarMateria(Integer id, MateriaRequestDto request) {
+    public GenericResponseDto modificarMateria(Integer idMateria, MateriaRequestDto request) {
         try {
             GenericResponseDto response = new GenericResponseDto();
-            Optional<Materia> materiaOpt = materiaRepository.findById(id);
+            Optional<Materia> materiaOpt = materiaRepository.findById(idMateria);
             if (materiaOpt.isEmpty()) {
                 response.setMessage("Materia no encontrada");
                 response.setSuccess(false);
                 return response;
             }
             Materia materia = materiaOpt.get();
+
+            // Verificar que el usuarioId del request sea el dueño de la materia
+            if (request.getUsuarioId() == null || materia.getUsuario() == null
+                    || !materia.getUsuario().getId().equals(request.getUsuarioId())) {
+                response.setMessage("No tienes permisos para modificar esta materia");
+                response.setSuccess(false);
+                return response;
+            }
 
             if (request.getTitulo() != null && !request.getTitulo().isEmpty()) {
                 materia.setTitulo(request.getTitulo());
@@ -146,15 +154,24 @@ public class MateriaService {
         }
     }
 
-    public GenericResponseDto eliminarMateria(Integer id) {
+    public GenericResponseDto eliminarMateria(Integer idMateria, Integer usuarioId) {
         try {
             GenericResponseDto response = new GenericResponseDto();
-            if (!materiaRepository.existsById(id)) {
+            Optional<Materia> materiaOpt = materiaRepository.findById(idMateria);
+            if (materiaOpt.isEmpty()) {
                 response.setMessage("Materia no encontrada");
                 response.setSuccess(false);
                 return response;
             }
-            materiaRepository.deleteById(id);
+            Materia materia = materiaOpt.get();
+
+            // Verificar que el usuarioId sea el dueño de la materia
+            if (usuarioId == null || materia.getUsuario() == null || !materia.getUsuario().getId().equals(usuarioId)) {
+                response.setMessage("No tienes permisos para eliminar esta materia");
+                response.setSuccess(false);
+                return response;
+            }
+            materiaRepository.deleteById(idMateria);
             response.setMessage("Materia eliminada exitosamente");
             response.setSuccess(true);
             return response;
@@ -201,42 +218,6 @@ public class MateriaService {
                     .collect(Collectors.toList());
         } catch (Exception e) {
             return List.of();
-        }
-    }
-
-    // Agregar uno o varios horarios a una materia existente
-    public GenericResponseDto agregarHorariosAMateria(Integer materiaId,
-            List<HorarioMateriaRequestDto> horariosRequest) {
-        try {
-            GenericResponseDto response = new GenericResponseDto();
-            Optional<Materia> materiaOpt = materiaRepository.findById(materiaId);
-            if (materiaOpt.isEmpty()) {
-                response.setMessage("Materia no encontrada");
-                response.setSuccess(false);
-                return response;
-            }
-            Materia materia = materiaOpt.get();
-            if (horariosRequest == null || horariosRequest.isEmpty()) {
-                response.setMessage("No se recibieron horarios para agregar");
-                response.setSuccess(false);
-                return response;
-            }
-            for (HorarioMateriaRequestDto req : horariosRequest) {
-                HorarioPorMateria horario = new HorarioPorMateria();
-                horario.setMateria(materia);
-                horario.setDia(DiaSemana.valueOf(req.getDia().toUpperCase()));
-                horario.setHoraInicio(java.time.LocalTime.parse(req.getHoraInicio()));
-                horario.setHoraFin(java.time.LocalTime.parse(req.getHoraFin()));
-                horarioRepository.save(horario);
-            }
-            response.setMessage("Horarios agregados exitosamente");
-            response.setSuccess(true);
-            return response;
-        } catch (Exception e) {
-            GenericResponseDto response = new GenericResponseDto();
-            response.setMessage("Error al agregar horarios: " + e.getMessage());
-            response.setSuccess(false);
-            return response;
         }
     }
 

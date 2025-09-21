@@ -28,14 +28,15 @@ public class MateriaController {
 
     // Modificar materia
     @PutMapping("/modificar/{id}")
-    public GenericResponseDto modificarMateria(@PathVariable Integer id, @RequestBody MateriaRequestDto request) {
-        return materiaService.modificarMateria(id, request);
+    public GenericResponseDto modificarMateria(@PathVariable Integer idMateria,
+            @RequestBody MateriaRequestDto request) {
+        return materiaService.modificarMateria(idMateria, request);
     }
 
     // Eliminar materia
     @DeleteMapping("/eliminar/{id}")
-    public GenericResponseDto eliminarMateria(@PathVariable Integer id) {
-        return materiaService.eliminarMateria(id);
+    public GenericResponseDto eliminarMateria(@PathVariable Integer idMateria, @RequestParam Integer usuarioId) {
+        return materiaService.eliminarMateria(idMateria, usuarioId);
     }
 
     // Obtener materias por usuario
@@ -50,10 +51,4 @@ public class MateriaController {
         return materiaService.obtenerMateriasConHorariosPorUsuario(usuarioId);
     }
 
-    // Agregar horarios a una materia
-    @PostMapping("/{materiaId}/horarios")
-    public GenericResponseDto agregarHorariosAMateria(@PathVariable Integer materiaId,
-            @RequestBody java.util.List<HorarioMateriaRequestDto> horariosRequest) {
-        return materiaService.agregarHorariosAMateria(materiaId, horariosRequest);
-    }
 }
