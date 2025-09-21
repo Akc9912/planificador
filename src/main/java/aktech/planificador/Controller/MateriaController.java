@@ -28,7 +28,7 @@ public class MateriaController {
 
     // Modificar materia
     @PutMapping("/modificar/{id}")
-    public GenericResponseDto modificarMateria(@PathVariable Integer idMateria,
+    public GenericResponseDto modificarMateria(@PathVariable("id") Integer idMateria,
             @RequestBody MateriaRequestDto request) {
         return materiaService.modificarMateria(idMateria, request);
     }
