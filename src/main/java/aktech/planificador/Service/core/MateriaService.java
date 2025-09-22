@@ -4,6 +4,7 @@ import aktech.planificador.Model.enums.DiaSemana;
 import aktech.planificador.Model.historial.HorarioPorMateria;
 import aktech.planificador.Repository.historial.HorarioPorMateriaRepository;
 import aktech.planificador.Dto.GenericResponseDto;
+import aktech.planificador.Dto.materia.DashboardDataDto;
 import aktech.planificador.Dto.materia.HorarioMateriaRequestDto;
 import aktech.planificador.Dto.materia.MateriaRequestDto;
 import aktech.planificador.Dto.materia.MateriaResponseDto;
@@ -18,6 +19,9 @@ import aktech.planificador.Repository.core.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -282,4 +286,5 @@ public class MateriaService {
             return List.of();
         }
     }
+
 }

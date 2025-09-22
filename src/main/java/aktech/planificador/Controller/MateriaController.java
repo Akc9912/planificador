@@ -50,5 +50,4 @@ public class MateriaController {
     public List<MateriaPlannerResponseDto> obtenerMateriasConHorariosPorUsuario(@PathVariable Integer usuarioId) {
         return materiaService.obtenerMateriasConHorariosPorUsuario(usuarioId);
     }
-
 }

@@ -1,5 +1,6 @@
 package aktech.planificador.Controller;
 
+import aktech.planificador.Dto.materia.DashboardDataDto;
 import aktech.planificador.Dto.usuarios.UsuarioRequestDto;
 import aktech.planificador.Dto.usuarios.UsuarioResponseDto;
 import aktech.planificador.Service.core.UsuarioService;
@@ -30,5 +31,11 @@ public class UsuarioController {
     @DeleteMapping(path = "/baja/{id}")
     public boolean bajaUsuario(@PathVariable Integer id) {
         return usuarioService.deleteUsuario(id);
+    }
+
+    // datos dashboard
+    @GetMapping(path = "/dashboard/{id}")
+    public DashboardDataDto getDatosDashboard(@PathVariable Integer id) {
+        return usuarioService.obtenerDatosDashboard(id);
     }
 }
