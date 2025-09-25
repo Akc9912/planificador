@@ -344,7 +344,11 @@ public class MateriaService {
                 return List.of();
             }
             LocalTime ahora = LocalTime.now();
-            DiaSemana diaHoy = DiaSemana.values()[LocalDate.now().getDayOfWeek().getValue() % 7];
+            // Convertir DayOfWeek de Java a nuestro enum DiaSemana
+            // Java: MONDAY=1, TUESDAY=2, ..., SUNDAY=7
+            // Nuestro enum: LUNES=0, MARTES=1, ..., DOMINGO=6
+            int dayOfWeekValue = LocalDate.now().getDayOfWeek().getValue();
+            DiaSemana diaHoy = DiaSemana.values()[dayOfWeekValue - 1];
             List<Materia> materias = materiaRepository.findByUsuarioId(usuarioId).stream()
                     .filter(m -> m.getEstado() != null && m.getEstado() == EstadoMateria.CURSANDO)
                     .collect(Collectors.toList());
