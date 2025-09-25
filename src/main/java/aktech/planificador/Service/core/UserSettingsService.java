@@ -40,4 +40,32 @@ public class UserSettingsService {
         dto.setPrimerDia(settings.getPrimerDia());
         return dto;
     }
+
+    // actualizar settings
+    public UserSettingsResponseDto updateSettings(Integer userId, UserSettingsResponseDto dto) {
+        UserSettings settings = userSettingsRepository.findByUsuarioId(userId);
+        if (settings == null) {
+            throw new RuntimeException("Configuración de usuario no encontrada");
+        }
+        if (dto.getTheme() != null) {
+            settings.setTheme(Theme.valueOf(dto.getTheme()));
+        }
+        if (dto.getNotificaciones() != null) {
+            settings.setNotificaciones(dto.getNotificaciones());
+        }
+        if (dto.getFormatoHora() != null) {
+            settings.setFormatoHora(dto.getFormatoHora());
+        }
+        if (dto.getInicioPlanner() != null) {
+            settings.setInicioPlanner(dto.getInicioPlanner());
+        }
+        if (dto.getFinPlanner() != null) {
+            settings.setFinPlanner(dto.getFinPlanner());
+        }
+        if (dto.getPrimerDia() != null) {
+            settings.setPrimerDia(dto.getPrimerDia());
+        }
+        userSettingsRepository.save(settings);
+        return mapToDto(settings);
+    }
 }
