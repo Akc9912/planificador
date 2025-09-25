@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import aktech.planificador.Dto.materia.DashboardDataDto;
 import aktech.planificador.Dto.materia.MateriaPlannerResponseDto;
+import aktech.planificador.Dto.materia.StatsMateriaDto;
 import aktech.planificador.Dto.usuarios.UsuarioRequestDto;
 import aktech.planificador.Dto.usuarios.UsuarioResponseDto;
 import aktech.planificador.Model.core.Materia;
@@ -29,12 +30,14 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final MateriaRepository materiaRepository;
     private final HorarioPorMateriaRepository horarioRepository;
+    private final MateriaService materiaService;
 
     public UsuarioService(UsuarioRepository usuarioRepository, MateriaRepository materiaRepository,
-            HorarioPorMateriaRepository horarioRepository) {
+            HorarioPorMateriaRepository horarioRepository, MateriaService materiaService) {
         this.usuarioRepository = usuarioRepository;
         this.materiaRepository = materiaRepository;
         this.horarioRepository = horarioRepository;
+        this.materiaService = materiaService;
     }
 
     public UsuarioResponseDto mapToDto(Usuario user) {
@@ -130,100 +133,19 @@ public class UsuarioService {
     // stats para el dashboard
     public DashboardDataDto obtenerDatosDashboard(Integer usuarioId) {
         DashboardDataDto dto = new DashboardDataDto();
-        dto.setMateriasActivas(contarMateriasActivasPorUsuario(usuarioId));
-        dto.setHorasSemanales(contarHorasSemanalesDeMateriasActivas(usuarioId));
-        dto.setProximasMaterias(obtenerProximasMateriasDelDia(usuarioId));
+        dto.setMateriasActivas(materiaService.contarMateriasActivasPorUsuario(usuarioId));
+        dto.setHorasSemanales(materiaService.contarHorasSemanalesDeMateriasActivas(usuarioId));
+        dto.setProximasMaterias(materiaService.obtenerProximasMateriasDelDia(usuarioId));
         return dto;
     }
 
-    // metodos privados
-
-    // conteo de materias activas por usuario (estado cusrsando)
-    private Long contarMateriasActivasPorUsuario(Integer usuarioId) {
-        try {
-            if (usuarioId == null) {
-                return 0L;
-            }
-            Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
-            if (usuarioOpt.isEmpty()) {
-                return 0L;
-            }
-            return materiaRepository.countByUsuarioIdAndEstado(usuarioId, EstadoMateria.CURSANDO);
-        } catch (Exception e) {
-            return 0L;
-        }
-    }
-
-    // conteo de horas semanales de materias activas (estado cursando)
-    private Long contarHorasSemanalesDeMateriasActivas(Integer usuarioId) {
-        try {
-            if (usuarioId == null) {
-                return 0L;
-            }
-            Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
-            if (usuarioOpt.isEmpty()) {
-                return 0L;
-            }
-            List<Materia> materias = materiaRepository.findByUsuarioId(usuarioId).stream()
-                    .filter(m -> m.getEstado() != null && m.getEstado() == EstadoMateria.CURSANDO)
-                    .collect(Collectors.toList());
-            Long totalHoras = 0L;
-            for (Materia m : materias) {
-                List<HorarioPorMateria> horarios = horarioRepository.findByMateriaId(m.getId());
-                for (HorarioPorMateria h : horarios) {
-                    if (h.getHoraInicio() != null && h.getHoraFin() != null) {
-                        long horas = Duration.between(h.getHoraInicio(), h.getHoraFin()).toHours();
-                        totalHoras += horas;
-                    }
-                }
-            }
-            return totalHoras;
-        } catch (Exception e) {
-            return 0L;
-        }
-    }
-
-    // listado de proximas materias del dia (estado cursando y nos basamos en la
-    // hora y dia actual)
-    private List<MateriaPlannerResponseDto> obtenerProximasMateriasDelDia(Integer usuarioId) {
-        try {
-            if (usuarioId == null) {
-                return List.of();
-            }
-            Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
-            if (usuarioOpt.isEmpty()) {
-                return List.of();
-            }
-            LocalTime ahora = LocalTime.now();
-            DiaSemana diaHoy = DiaSemana.values()[LocalDate.now().getDayOfWeek().getValue() % 7];
-            List<Materia> materias = materiaRepository.findByUsuarioId(usuarioId).stream()
-                    .filter(m -> m.getEstado() != null && m.getEstado() == EstadoMateria.CURSANDO)
-                    .collect(Collectors.toList());
-            return materias.stream()
-                    .flatMap(m -> {
-                        List<HorarioPorMateria> horariosHoy = horarioRepository.findByMateriaId(m.getId()).stream()
-                                .filter(h -> h.getDia() == diaHoy && h.getHoraInicio() != null
-                                        && h.getHoraInicio().isAfter(ahora))
-                                .collect(Collectors.toList());
-                        return horariosHoy.stream().map(h -> {
-                            MateriaPlannerResponseDto dto = new MateriaPlannerResponseDto();
-                            dto.setTitulo(m.getTitulo());
-                            dto.setColor(m.getColor());
-                            dto.setHoraInicio(h.getHoraInicio());
-                            dto.setHoraFin(h.getHoraFin());
-                            dto.setDia(h.getDia());
-                            return dto;
-                        });
-                    })
-                    .sorted((d1, d2) -> {
-                        LocalTime h1 = d1.getHoraInicio() != null ? d1.getHoraInicio() : LocalTime.MAX;
-                        LocalTime h2 = d2.getHoraInicio() != null ? d2.getHoraInicio() : LocalTime.MAX;
-                        return h1.compareTo(h2);
-                    })
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            return List.of();
-        }
+    // stats para seccion materias
+    public StatsMateriaDto obtenerStatsMateria(Integer usuarioId) {
+        StatsMateriaDto dto = new StatsMateriaDto();
+        dto.setMateriasActivas(materiaService.contarMateriasActivasPorUsuario(usuarioId));
+        dto.setMateriasTotales(materiaService.contarTotalMateriasPorUsuario(usuarioId));
+        dto.setPromedio(materiaService.promedioCalificacionesDeMaterias(usuarioId));
+        return dto;
     }
 
     // baja usuario (solo desactivar)

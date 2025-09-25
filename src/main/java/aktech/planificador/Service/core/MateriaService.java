@@ -287,4 +287,131 @@ public class MateriaService {
         }
     }
 
+    // conteo de materias activas por usuario (estado cursando)
+    public Long contarMateriasActivasPorUsuario(Integer usuarioId) {
+        try {
+            if (usuarioId == null) {
+                return 0L;
+            }
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
+            if (usuarioOpt.isEmpty()) {
+                return 0L;
+            }
+            return materiaRepository.countByUsuarioIdAndEstado(usuarioId, EstadoMateria.CURSANDO);
+        } catch (Exception e) {
+            return 0L;
+        }
+    }
+
+    // conteo de horas semanales de materias activas (estado cursando)
+    public Long contarHorasSemanalesDeMateriasActivas(Integer usuarioId) {
+        try {
+            if (usuarioId == null) {
+                return 0L;
+            }
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
+            if (usuarioOpt.isEmpty()) {
+                return 0L;
+            }
+            List<Materia> materias = materiaRepository.findByUsuarioId(usuarioId).stream()
+                    .filter(m -> m.getEstado() != null && m.getEstado() == EstadoMateria.CURSANDO)
+                    .collect(Collectors.toList());
+            Long totalHoras = 0L;
+            for (Materia m : materias) {
+                List<HorarioPorMateria> horarios = horarioRepository.findByMateriaId(m.getId());
+                for (HorarioPorMateria h : horarios) {
+                    if (h.getHoraInicio() != null && h.getHoraFin() != null) {
+                        long horas = Duration.between(h.getHoraInicio(), h.getHoraFin()).toHours();
+                        totalHoras += horas;
+                    }
+                }
+            }
+            return totalHoras;
+        } catch (Exception e) {
+            return 0L;
+        }
+    }
+
+    // listado de proximas materias del dia (estado cursando y nos basamos en la
+    // hora y dia actual)
+    public List<MateriaPlannerResponseDto> obtenerProximasMateriasDelDia(Integer usuarioId) {
+        try {
+            if (usuarioId == null) {
+                return List.of();
+            }
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
+            if (usuarioOpt.isEmpty()) {
+                return List.of();
+            }
+            LocalTime ahora = LocalTime.now();
+            DiaSemana diaHoy = DiaSemana.values()[LocalDate.now().getDayOfWeek().getValue() % 7];
+            List<Materia> materias = materiaRepository.findByUsuarioId(usuarioId).stream()
+                    .filter(m -> m.getEstado() != null && m.getEstado() == EstadoMateria.CURSANDO)
+                    .collect(Collectors.toList());
+            return materias.stream()
+                    .flatMap(m -> {
+                        List<HorarioPorMateria> horariosHoy = horarioRepository.findByMateriaId(m.getId()).stream()
+                                .filter(h -> h.getDia() == diaHoy && h.getHoraInicio() != null
+                                        && h.getHoraInicio().isAfter(ahora))
+                                .collect(Collectors.toList());
+                        return horariosHoy.stream().map(h -> {
+                            MateriaPlannerResponseDto dto = new MateriaPlannerResponseDto();
+                            dto.setTitulo(m.getTitulo());
+                            dto.setColor(m.getColor());
+                            dto.setHoraInicio(h.getHoraInicio());
+                            dto.setHoraFin(h.getHoraFin());
+                            dto.setDia(h.getDia());
+                            return dto;
+                        });
+                    })
+                    .sorted((d1, d2) -> {
+                        LocalTime h1 = d1.getHoraInicio() != null ? d1.getHoraInicio() : LocalTime.MAX;
+                        LocalTime h2 = d2.getHoraInicio() != null ? d2.getHoraInicio() : LocalTime.MAX;
+                        return h1.compareTo(h2);
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
+    // total de materias por usuario (cualquier estado)
+    public Long contarTotalMateriasPorUsuario(Integer usuarioId) {
+        try {
+            if (usuarioId == null) {
+                return 0L;
+            }
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
+            if (usuarioOpt.isEmpty()) {
+                return 0L;
+            }
+            return materiaRepository.countByUsuarioId(usuarioId);
+        } catch (Exception e) {
+            return 0L;
+        }
+    }
+
+    // promedio de calificaciones de materias (solo materias con calificacion no
+    // nula o no 0)
+    public Double promedioCalificacionesDeMaterias(Integer usuarioId) {
+        try {
+            if (usuarioId == null) {
+                return 0.0;
+            }
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
+            if (usuarioOpt.isEmpty()) {
+                return 0.0;
+            }
+            List<Materia> materias = materiaRepository.findByUsuarioId(usuarioId).stream()
+                    .filter(m -> m.getCalificacion() != null && m.getCalificacion() > 0)
+                    .collect(Collectors.toList());
+            if (materias.isEmpty()) {
+                return 0.0;
+            }
+            Double suma = materias.stream().mapToDouble(Materia::getCalificacion).sum();
+            return suma / materias.size();
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
 }

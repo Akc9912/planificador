@@ -1,6 +1,7 @@
 package aktech.planificador.Controller;
 
 import aktech.planificador.Dto.materia.DashboardDataDto;
+import aktech.planificador.Dto.materia.StatsMateriaDto;
 import aktech.planificador.Dto.usuarios.UsuarioRequestDto;
 import aktech.planificador.Dto.usuarios.UsuarioResponseDto;
 import aktech.planificador.Service.core.UsuarioService;
@@ -37,5 +38,11 @@ public class UsuarioController {
     @GetMapping(path = "/dashboard/{id}")
     public DashboardDataDto getDatosDashboard(@PathVariable Integer id) {
         return usuarioService.obtenerDatosDashboard(id);
+    }
+
+    // stats materias
+    @GetMapping(path = "/{id}/stats-materias")
+    public StatsMateriaDto getStatsMaterias(@PathVariable Integer id) {
+        return usuarioService.obtenerStatsMateria(id);
     }
 }

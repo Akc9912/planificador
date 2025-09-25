@@ -13,4 +13,6 @@ public interface MateriaRepository extends JpaRepository<Materia, Integer> {
     List<Materia> findByUsuarioId(Integer usuarioId);
 
     Long countByUsuarioIdAndEstado(Integer usuarioId, EstadoMateria estado);
+
+    Long countByUsuarioId(Integer usuarioId);
 }
