@@ -6,6 +6,7 @@ public class EventoRequestDto {
     private String titulo;
     private String color;
     private Integer idUsuario;
+    private Integer idMateria;
     private List<HorarioPorEventoDto> horarios;
 
     public String getTitulo() {
@@ -32,11 +33,19 @@ public class EventoRequestDto {
         this.idUsuario = idUsuario;
     }
 
-    public List<HorarioPorEventoDto> getHorario() {
+    public List<HorarioPorEventoDto> getHorarios() {
         return this.horarios;
     }
 
-    public void setHorario(List<HorarioPorEventoDto> horarios) {
+    public void setHorarios(List<HorarioPorEventoDto> horarios) {
         this.horarios = horarios;
+    }
+
+    public Integer getIdMateria() {
+        return this.idMateria;
+    }
+
+    public void setIdMateria(Integer idMateria) {
+        this.idMateria = idMateria;
     }
 }

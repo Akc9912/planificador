@@ -139,6 +139,12 @@ CREATE INDEX idx_materias_calificacion ON materias(calificacion);
 CREATE INDEX idx_auditoria_accion ON auditoria(accion);
 CREATE INDEX idx_auditoria_tabla_afectada ON auditoria(tabla_afectada);
 
+-- Índices para eventos y recordatorios
+CREATE INDEX idx_evento_inicio ON horario_por_evento(inicio);
+CREATE INDEX idx_evento_fin ON horario_por_evento(fin);
+CREATE INDEX idx_evento_usuario ON evento(id_usuario);
+CREATE INDEX idx_recordatorio_usuario ON recordatorio(id_usuario);
+
 
 -- soporte (reporte de problemas y sugerencia)
 

@@ -2,6 +2,7 @@ package aktech.planificador.Service.core;
 
 import java.util.List;
 import java.util.Optional;
+import aktech.planificador.Exception.ResourceNotFoundException;
 
 import org.springframework.stereotype.Service;
 
@@ -38,14 +39,28 @@ public class EventoService {
 
     // crear evento y sus horarios
     public EventoResponseDto crearEvento(EventoRequestDto request) {
-        Optional<Usuario> user = usuarioRepository.findById(request.getIdUsuario());
+        Usuario user = usuarioRepository.findById(request.getIdUsuario())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
         Evento evento = new Evento(request.getTitulo(), request.getColor(), user);
-        if (evento != null) {
-            // si el evento no es nulo creamos la lista de horarios del evento si no es nulo a partir de la lista de horarios del request
-            List<HorarioPorEvento> horarios = horarioPorEventoRepository
-                    .saveAll(request.getHorario().stream().map(horario -> new HorarioPorEvento(evento, horario.getInicio(), horario.getFin())).toList());
-                            .toList());
+        evento = eventoRepository.save(evento);
+
+        // Si hay una materia asociada, crear la relación
+        if (request.getIdMateria() != null) {
+            Materia materia = materiaRepository.findById(request.getIdMateria())
+                    .orElseThrow(() -> new ResourceNotFoundException("Materia no encontrada"));
+            EventoMateria eventoMateria = new EventoMateria(evento, materia);
+            eventoMateriaRepository.save(eventoMateria);
         }
+
+        // Guardar los horarios del evento
+        if (request.getHorarios() != null && !request.getHorarios().isEmpty()) {
+            List<HorarioPorEvento> horarios = request.getHorarios().stream()
+                    .map(horario -> new HorarioPorEvento(evento, horario.getInicio(), horario.getFin()))
+                    .toList();
+            horarioPorEventoRepository.saveAll(horarios);
+        }
+
         return mapToDto(evento);
     }
 
@@ -54,7 +69,33 @@ public class EventoService {
         Evento evento = eventoRepository.findById(idEvento);
         evento.setTitulo(request.getTitulo());
         evento.setColor(request.getColor());
-        eventoRepository.save(evento);
+        evento = eventoRepository.save(evento);
+
+        // Manejar la relación con la materia
+        List<EventoMateria> eventoMaterias = eventoMateriaRepository.findByEvento_Id(idEvento);
+
+        // Si hay una materia en el request
+        if (request.getIdMateria() != null) {
+            Materia materia = materiaRepository.findById(request.getIdMateria())
+                    .orElseThrow(() -> new ResourceNotFoundException("Materia no encontrada"));
+
+            // Si no existe la relación, la creamos
+            if (eventoMaterias.isEmpty()) {
+                EventoMateria eventoMateria = new EventoMateria(evento, materia);
+                eventoMateriaRepository.save(eventoMateria);
+            }
+            // Si existe y es diferente, la actualizamos
+            else if (!eventoMaterias.get(0).getMateria().getId().equals(request.getIdMateria())) {
+                EventoMateria eventoMateria = eventoMaterias.get(0);
+                eventoMateria.setMateria(materia);
+                eventoMateriaRepository.save(eventoMateria);
+            }
+        }
+        // Si no hay materia en el request pero existe una relación, la eliminamos
+        else if (!eventoMaterias.isEmpty()) {
+            eventoMateriaRepository.deleteAll(eventoMaterias);
+        }
+
         return mapToDto(evento);
     }
 
@@ -71,6 +112,16 @@ public class EventoService {
         dto.setId(evento.getId());
         dto.setTitulo(evento.getTitulo());
         dto.setColor(evento.getColor());
+
+        // Buscar si el evento tiene una materia asociada
+        EventoMateria eventoMateria = eventoMateriaRepository.findByEvento_Id(evento.getId())
+                .stream().findFirst().orElse(null);
+
+        if (eventoMateria != null && eventoMateria.getMateria() != null) {
+            dto.setIdMateria(eventoMateria.getMateria().getId());
+            dto.setNombreMateria(eventoMateria.getMateria().getNombre());
+        }
+
         return dto;
     }
 

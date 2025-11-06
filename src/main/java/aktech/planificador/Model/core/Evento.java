@@ -1,7 +1,5 @@
 package aktech.planificador.Model.core;
 
-import java.util.Optional;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -9,7 +7,7 @@ import jakarta.persistence.*;
 public class Evento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false, length = 100)
     private String titulo;
@@ -19,19 +17,23 @@ public class Evento {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Optional<Usuario> usuario;
+    private Usuario usuario;
 
-    public Evento(String titulo, String color, Optional<Usuario> u) {
-        this.titulo = titulo;
-        this.color = color;
-        this.usuario = u;
+    public Evento() {
+        // Required by JPA
     }
 
-    public int getId() {
+    public Evento(String titulo, String color, Usuario usuario) {
+        this.titulo = titulo;
+        this.color = color;
+        this.usuario = usuario;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -51,11 +53,12 @@ public class Evento {
         this.color = color;
     }
 
-    public Optional<Usuario> getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(Optional<Usuario> usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+
 }

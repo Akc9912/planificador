@@ -19,6 +19,10 @@ public class HorarioPorEvento {
     private LocalDateTime inicio;
     private LocalDateTime fin;
 
+    public HorarioPorEvento() {
+        // Required by JPA
+    }
+
     public HorarioPorEvento(Evento evento, LocalDateTime inicio, LocalDateTime fin) {
         this.evento = evento;
         this.inicio = inicio;

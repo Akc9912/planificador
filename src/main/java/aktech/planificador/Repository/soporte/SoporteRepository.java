@@ -1,4 +1,4 @@
-package aktech.planificador.Repository.sopoerte;
+package aktech.planificador.Repository.soporte;
 
 import java.util.List;
 
