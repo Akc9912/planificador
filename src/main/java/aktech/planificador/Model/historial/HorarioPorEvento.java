@@ -19,7 +19,10 @@ public class HorarioPorEvento {
     private LocalDateTime inicio;
     private LocalDateTime fin;
 
-    public HorarioPorEvento() {
+    public HorarioPorEvento(Evento evento, LocalDateTime inicio, LocalDateTime fin) {
+        this.evento = evento;
+        this.inicio = inicio;
+        this.fin = fin;
     }
 
     public Integer getId() {

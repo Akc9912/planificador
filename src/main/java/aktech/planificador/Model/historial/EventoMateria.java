@@ -2,6 +2,8 @@ package aktech.planificador.Model.historial;
 
 import jakarta.persistence.*;
 
+import java.util.Optional;
+
 import aktech.planificador.Model.core.Evento;
 import aktech.planificador.Model.core.Materia;
 
@@ -19,14 +21,14 @@ public class EventoMateria {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_materia")
-    private Materia materia;
+    private Optional<Materia> materia;
 
     public EventoMateria() {
     }
 
-    public EventoMateria(Evento evento, Materia materia) {
+    public EventoMateria(Evento evento, Optional<Materia> materia2) {
         this.evento = evento;
-        this.materia = materia;
+        this.materia = materia2;
     }
 
     public Integer getId() {
@@ -45,11 +47,11 @@ public class EventoMateria {
         this.evento = evento;
     }
 
-    public Materia getMateria() {
+    public Optional<Materia> getMateria() {
         return materia;
     }
 
-    public void setMateria(Materia materia) {
+    public void setMateria(Optional<Materia> materia) {
         this.materia = materia;
     }
 }

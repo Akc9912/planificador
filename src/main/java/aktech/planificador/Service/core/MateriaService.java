@@ -4,7 +4,6 @@ import aktech.planificador.Model.enums.DiaSemana;
 import aktech.planificador.Model.historial.HorarioPorMateria;
 import aktech.planificador.Repository.historial.HorarioPorMateriaRepository;
 import aktech.planificador.Dto.GenericResponseDto;
-import aktech.planificador.Dto.materia.DashboardDataDto;
 import aktech.planificador.Dto.materia.HorarioMateriaRequestDto;
 import aktech.planificador.Dto.materia.MateriaRequestDto;
 import aktech.planificador.Dto.materia.MateriaResponseDto;

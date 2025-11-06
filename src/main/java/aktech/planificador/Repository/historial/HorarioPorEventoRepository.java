@@ -7,5 +7,5 @@ import aktech.planificador.Model.historial.HorarioPorEvento;
 
 @Repository
 public interface HorarioPorEventoRepository extends JpaRepository<HorarioPorEvento, Integer> {
-    // Métodos personalizados si es necesario
+    HorarioPorEvento findByIdEvento(int idEvento);
 }

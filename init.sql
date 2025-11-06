@@ -80,8 +80,6 @@ CREATE TABLE evento_materia (
     FOREIGN KEY (id_materia) REFERENCES materias(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-
-
 CREATE TABLE recordatorio (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(100) NOT NULL,
@@ -142,7 +140,16 @@ CREATE INDEX idx_auditoria_accion ON auditoria(accion);
 CREATE INDEX idx_auditoria_tabla_afectada ON auditoria(tabla_afectada);
 
 
+-- soporte (reporte de problemas y sugerencia)
 
+create table soporte(
+    id int AUTO_INCREMENT PRIMARY KEY,
+    id_usuario int not null,
+    tipo enum('REPORTE_PROBLEMA','SUGERENCIA')
+    titulo varchar(50) not null,
+    mensaje text not null,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+) ENGINE=InnoDB;
 
 
 
