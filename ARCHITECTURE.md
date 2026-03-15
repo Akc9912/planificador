@@ -34,6 +34,12 @@
 - ✅ Ser fácilmente testeable y mantenible
 - 🔒 Bonus: Podría separarse si alguna vez hay necesidad extrema de escala
 
+### 1.1 Reglas Operativas de Migracion (14/03/2026)
+
+- ✅ El codigo legacy no recibe tests nuevos; cada dominio se testea al migrar a modulo.
+- ✅ La adopcion de `UUID` es incremental por modulo, no un prerequisito global.
+- ✅ El backend permanece fuera de produccion hasta que el MVP modular quede correctamente testeado.
+
 ### 2. Alta Cohesión, Bajo Acoplamiento
 
 ```

@@ -11,7 +11,7 @@
 ```
 
 **Estado:** Backend de prueba existente en adaptacion (no conectado a produccion)  
-**Siguiente:** Cerrar setup modular de Fase 1 en Career (tests + validacion modular + hardening sobre UUID). Frontend se adapta cuando toque su migracion.
+**Siguiente:** Cerrar Fase 1 con handoff de contratos Career/Auth y arranque de Subject/Equivalence (migracion UUID incremental por modulo). Frontend se adapta cuando toque su migracion.
 
 </div>
 
@@ -189,7 +189,7 @@ Ver [ARCHITECTURE.md](ARCHITECTURE.md) para detalles completos.
 | Seguridad                 | Endurecida (modular)          | Filtro JWT modular + reglas por rol activas en `SecurityConfig`  |
 | Integracion Supabase Auth | Funcional en backend          | Validacion JWT activa; login/register/change-password delegados a Supabase (`410 GONE`) |
 | Persistencia              | En transicion a PostgreSQL    | Driver/URL PostgreSQL listos, con entidades legacy aun activas   |
-| Testing                   | Parcial funcional             | Suite auth modular en verde (`26/26`) + `PlanificadorApplicationTests#contextLoads` |
+| Testing                   | Parcial funcional             | Suite modular Auth/Career + `ModuleBoundariesTest` en verde (gate CI activo) |
 
 ### Lo que si esta avanzado
 
@@ -209,23 +209,27 @@ Ver [ARCHITECTURE.md](ARCHITECTURE.md) para detalles completos.
 - Base de comunicacion modular creada (`shared/api`, `shared/event`, `shared/util`, `shared/exception`).
 - Integracion inicial entre modulos (`CareerService` implementa `CareerApi` y publica `CareerDeletedEvent`).
 
+### Reglas operativas vigentes (14/03/2026)
+
+1. El codigo legacy no agrega tests nuevos; las pruebas se escriben cuando cada dominio migra a modulo.
+2. La migracion de `UUID` es incremental por modulo; no se exige refactor global previo para cerrar Fase 1.
+3. El backend no se conecta ni se usa en produccion hasta completar el MVP modular correctamente testeado.
+
 ### Bloqueadores actuales
 
-1. Brecha entre esquema objetivo UUID (`humanis_db_init.sql`) y entidades actuales con `Integer`.
-2. Cobertura de tests aun baja para modulo Career y rutas legacy criticas.
-3. Definir roadmap de reintroduccion de Event/Reminder como modulos Post-MVP.
-4. Preparar handoff de contratos API (`Career` + `Auth`) para integracion frontend cuando corresponda.
-5. Extender checks CI modulares a medida que entren Subject/Equivalence, manteniendo la regla de no acoplamiento.
+1. Definir roadmap de reintroduccion de Event/Reminder como modulos Post-MVP.
+2. Preparar handoff de contratos API (`Career` + `Auth`) para integracion frontend cuando corresponda.
+3. Extender checks CI modulares a medida que entren Subject/Equivalence, manteniendo la regla de no acoplamiento.
 
 **Nota de alcance:** la adaptacion de frontend a contratos backend se ejecuta cuando inicie la migracion del frontend; no bloquea el cierre tecnico de Career.
 
 ### Prioridades inmediatas
 
-1. Agregar tests de servicios y controladores para flujos criticos de Career.
-2. Mantener build en verde con control de regresiones.
-3. Preparar handoff del contrato API de Career/Auth para consumir desde frontend cuando toque su migracion.
-4. Planificar el inicio de Subject/Equivalence sobre esquema UUID una vez cerrado Career.
-5. Expandir el workflow de calidad modular para nuevos modulos (sumar Subject/Equivalence al migrarlos).
+1. Mantener build y gate modular en verde con control de regresiones.
+2. Preparar handoff del contrato API de Career/Auth para consumir desde frontend cuando toque su migracion.
+3. Planificar el inicio de Subject/Equivalence sobre esquema UUID con enfoque incremental por modulo.
+4. Expandir el workflow de calidad modular para nuevos modulos (sumar Subject/Equivalence al migrarlos).
+5. Consolidar roadmap Post-MVP de Event/Reminder sin reintroducir acoplamiento legacy.
 
 ### Decisión de Base de Datos
 
@@ -1787,7 +1791,11 @@ public class SubjectFacade {
 [ ] Avanzar Subject Module sobre esquema UUID objetivo (diferido hasta cerrar Career)
 [ ] Avanzar Equivalence Module sobre esquema UUID objetivo (diferido hasta cerrar Career)
 [x] Configurar Swagger/OpenAPI para endpoints nuevos
-[ ] Escribir unit tests por módulo (prioridad: Career)
+[x] Escribir unit tests de Career (service/controller + casos borde)
+[ ] Extender estrategia de unit tests al siguiente modulo MVP (Subject)
+[x] Definir regla: codigo legacy sin tests nuevos; pruebas al migrar cada modulo
+[x] Definir regla: migracion UUID incremental por modulo (no bloqueador global)
+[x] Definir regla: backend fuera de produccion hasta MVP modular testeado
 [x] Validar y mantener regla de no imports directos entre módulos (guardrail automatizado)
 [x] Agregar test de arquitectura para aislar módulos nuevos de capas legacy (`ModuleBoundariesTest`)
 ```

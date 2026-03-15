@@ -75,6 +75,20 @@ class CareerControllerTest {
     }
 
     @Test
+    void listByUserAndStatus_shouldDelegateUsingAuthenticatedUserId() {
+        UUID userId = UUID.randomUUID();
+        setAuthenticatedUser(userId.toString());
+
+        List<CareerResponseDto> expected = List.of(new CareerResponseDto());
+        when(careerService.listByUserAndStatus(userId, CareerStatus.IN_PROGRESS)).thenReturn(expected);
+
+        List<CareerResponseDto> response = careerController.listByUserAndStatus(CareerStatus.IN_PROGRESS);
+
+        assertSame(expected, response);
+        verify(careerService).listByUserAndStatus(userId, CareerStatus.IN_PROGRESS);
+    }
+
+    @Test
     void getByIdOwned_shouldDelegateUsingAuthenticatedUserId() {
         UUID userId = UUID.randomUUID();
         UUID careerId = UUID.randomUUID();
@@ -118,6 +132,20 @@ class CareerControllerTest {
     }
 
     @Test
+    void ownsCareer_shouldDelegateUsingAuthenticatedUserId() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+        setAuthenticatedUser(userId.toString());
+
+        when(careerService.ownsCareer(careerId, userId)).thenReturn(true);
+
+        boolean response = careerController.ownsCareer(careerId);
+
+        assertEquals(true, response);
+        verify(careerService).ownsCareer(careerId, userId);
+    }
+
+    @Test
     void listByStatusForAdminMetrics_shouldNotRequireAuthenticatedUser() {
         List<CareerResponseDto> expected = List.of(new CareerResponseDto());
         when(careerService.listByStatusForAdminMetrics(CareerStatus.IN_PROGRESS)).thenReturn(expected);
@@ -133,6 +161,16 @@ class CareerControllerTest {
         SecurityContextHolder.clearContext();
 
         BusinessException ex = assertThrows(BusinessException.class, () -> careerController.listByUser());
+
+        assertEquals("No hay usuario autenticado", ex.getMessage());
+    }
+
+    @Test
+    void getByIdOwned_shouldThrowWhenNoAuthenticatedUser() {
+        SecurityContextHolder.clearContext();
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> careerController.getByIdOwned(UUID.randomUUID()));
 
         assertEquals("No hay usuario autenticado", ex.getMessage());
     }

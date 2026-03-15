@@ -108,6 +108,41 @@ class CareerServiceTest {
     }
 
     @Test
+    void listByUserAndStatus_shouldMapRepositoryResults() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+
+        Career career = createCareer(careerId, userId, "Sistemas", "UTN");
+        career.setStatus(CareerStatus.IN_PROGRESS);
+
+        when(careerRepository.findByUserIdAndStatus(userId, CareerStatus.IN_PROGRESS))
+                .thenReturn(List.of(career));
+
+        List<CareerResponseDto> result = careerService.listByUserAndStatus(userId, CareerStatus.IN_PROGRESS);
+
+        assertEquals(1, result.size());
+        assertEquals(careerId, result.get(0).getId());
+        assertEquals(CareerStatus.IN_PROGRESS, result.get(0).getStatus());
+    }
+
+    @Test
+    void listByStatusForAdminMetrics_shouldMapRepositoryResults() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+
+        Career career = createCareer(careerId, userId, "Sistemas", "UTN");
+        career.setStatus(CareerStatus.COMPLETED);
+
+        when(careerRepository.findByStatus(CareerStatus.COMPLETED)).thenReturn(List.of(career));
+
+        List<CareerResponseDto> result = careerService.listByStatusForAdminMetrics(CareerStatus.COMPLETED);
+
+        assertEquals(1, result.size());
+        assertEquals(careerId, result.get(0).getId());
+        assertEquals(CareerStatus.COMPLETED, result.get(0).getStatus());
+    }
+
+    @Test
     void getOwnedOrThrow_shouldThrowWhenCareerNotFound() {
         UUID careerId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
@@ -187,6 +222,42 @@ class CareerServiceTest {
     }
 
     @Test
+    void getCareerBasic_shouldThrowWhenCareerNotFound() {
+        UUID careerId = UUID.randomUUID();
+
+        when(careerRepository.findById(careerId)).thenReturn(Optional.empty());
+
+        NotFoundException ex = assertThrows(NotFoundException.class, () -> careerService.getCareerBasic(careerId));
+
+        assertEquals("Carrera no encontrada", ex.getMessage());
+    }
+
+    @Test
+    void existsCareer_shouldDelegateToRepository() {
+        UUID careerId = UUID.randomUUID();
+
+        when(careerRepository.existsById(careerId)).thenReturn(true);
+
+        boolean result = careerService.existsCareer(careerId);
+
+        assertTrue(result);
+        verify(careerRepository).existsById(careerId);
+    }
+
+    @Test
+    void ownsCareer_shouldUseRepositoryWithOwnershipOrder() {
+        UUID careerId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        when(careerRepository.existsByIdAndUserId(careerId, userId)).thenReturn(true);
+
+        boolean result = careerService.ownsCareer(careerId, userId);
+
+        assertTrue(result);
+        verify(careerRepository).existsByIdAndUserId(careerId, userId);
+    }
+
+    @Test
     void userOwnsCareer_shouldUseRepositoryWithOwnershipOrder() {
         UUID userId = UUID.randomUUID();
         UUID careerId = UUID.randomUUID();
@@ -197,6 +268,30 @@ class CareerServiceTest {
 
         assertTrue(result);
         verify(careerRepository).existsByIdAndUserId(careerId, userId);
+    }
+
+    @Test
+    void createCareer_shouldThrowWhenNameIsBlank() {
+        UUID userId = UUID.randomUUID();
+
+        CareerCreateRequestDto request = new CareerCreateRequestDto();
+        request.setName("   ");
+        request.setInstitution("UTN");
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> careerService.createCareer(userId, request));
+
+        assertEquals("El campo nombre es obligatorio", ex.getMessage());
+    }
+
+    @Test
+    void updateCareer_shouldThrowWhenRequestIsNull() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> careerService.updateCareer(UUID.randomUUID(), UUID.randomUUID(), null));
+
+        assertEquals("El body de actualizacion es obligatorio", ex.getMessage());
     }
 
     private Career createCareer(UUID id, UUID userId, String name, String institution) {

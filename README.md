@@ -69,17 +69,21 @@ Este backend existe como prototipo legado en adaptacion y todavia no esta conect
 ### Bloqueadores actuales
 
 1. Formalizar contrato de endpoints legacy desacoplados (`410 GONE`) para Event/Reminder mientras se mantienen Post-MVP.
-2. Alinear modelo de datos Java (IDs y tablas) con el esquema objetivo en `humanis_db_init.sql`.
-3. Adaptar consumidores frontend al contrato endurecido de Career/Auth cuando llegue su migracion.
-4. Subir cobertura de tests para modulo Career y rutas legacy criticas.
-5. Definir roadmap de reintroduccion de Event/Reminder como modulos Post-MVP.
-6. Extender los checks CI modulares actuales a Subject/Equivalence al iniciar su migracion.
+2. Adaptar consumidores frontend al contrato endurecido de Career/Auth cuando llegue su migracion.
+3. Definir roadmap de reintroduccion de Event/Reminder como modulos Post-MVP.
+4. Extender los checks CI modulares actuales a Subject/Equivalence al iniciar su migracion.
+
+### Reglas operativas vigentes (14/03/2026)
+
+1. El codigo legacy no agrega tests nuevos; las pruebas se escriben cuando cada dominio migra a modulo.
+2. La migracion de `UUID` se ejecuta de forma incremental por modulo.
+3. El backend no se conecta ni se usa en produccion hasta completar el MVP modular correctamente testeado.
 
 ### Proximos hitos actualizados
 
 1. Mantener `mvn compile` en verde con control continuo de regresiones.
-2. Cubrir con tests de servicio/controlador los flujos de Career y rutas legacy criticas.
-3. Iniciar refactor de Subject/Equivalence hacia UUID + nombres de tablas objetivo.
+2. Extender tests de servicio/controlador al siguiente modulo migrado (Subject).
+3. Iniciar refactor de Subject/Equivalence hacia UUID + nombres de tablas objetivo con enfoque incremental por modulo.
 4. Preparar handoff de contrato API de Career/Auth para frontend cuando toque su migracion.
 5. Escalar el workflow de calidad modular en CI para validar nuevos modulos migrados.
 
