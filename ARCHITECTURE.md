@@ -30,6 +30,7 @@
 - ✅ Ser autónomo y funcionar independientemente
 - ✅ Tener su propia lógica de negocio encapsulada
 - ✅ NO depender directamente de otros módulos
+- ✅ NO interactuar con código legacy desde código nuevo
 - ✅ Ser fácilmente testeable y mantenible
 - 🔒 Bonus: Podría separarse si alguna vez hay necesidad extrema de escala
 
@@ -85,6 +86,34 @@ modules/[nombre]/
 └── exception/               → Excepciones específicas del módulo
     └── [Nombre]NotFoundException.java
 ```
+
+### Estado Aplicado: Módulo Auth (14/03/2026)
+
+``` 
+modules/auth/
+├── controller/
+│   └── AuthModuleController.java
+├── filter/
+│   └── AuthJwtAuthenticationFilter.java
+├── service/
+│   ├── AuthSessionService.java
+│   └── JwtService.java
+└── dto/
+    ├── LoginRequestDto.java
+    ├── LoginResponseDto.java
+    ├── RegisterRequestDto.java
+    ├── RegisterResponseDto.java
+    ├── ChangePasswordRequestDto.java
+    ├── ChangePasswordResponseDto.java
+    └── TokenValidationRequestDto.java
+```
+
+**Criterios aplicados en Auth modular:**
+
+- ✅ `login/register/change-password` se delegan a Supabase Auth (`410 GONE` en backend).
+- ✅ Backend provee validación/autorización con `/auth/me` y `/auth/token/validate`.
+- ✅ El módulo `auth` no depende de clases legacy de `Controller`, `Service`, `DTO` o `Model`.
+- ✅ Seguridad cableada con `AuthJwtAuthenticationFilter` en `SecurityConfig`.
 
 ### Ejemplo Completo: Módulo Subject
 
@@ -154,6 +183,7 @@ public class SubjectServiceImpl implements SubjectService {
 - 🚫 Tests complejos (necesitas mockear el otro módulo)
 - 🚫 Cambios en un módulo pueden romper el otro
 - 🚫 Difícil mantener y evolucionar
+- 🚫 Código nuevo interactuando con capas legacy
 
 ### ✅ Opción 1: Interfaces de Comunicación
 
@@ -561,6 +591,14 @@ modules/career/
             └── CareerRepositoryTest.java
 ```
 
+### Estado Actual de Testing Auth
+
+- ✅ Unit tests de `AuthSessionService`
+- ✅ Unit tests de `AuthJwtAuthenticationFilter`
+- ✅ Unit tests de `AuthModuleController`
+- ✅ Integration tests de reglas de `SecurityConfig` para auth
+- ✅ Suite auth modular en verde: `26/26`
+
 ### Unit Tests - Service
 
 ```java
@@ -700,7 +738,7 @@ class CareerControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private JwtAuthenticationFilter jwtFilter;  // Mock auth para tests
+    private AuthJwtAuthenticationFilter jwtFilter;  // Mock auth modular para tests
 
     private UUID userId;
 
@@ -803,7 +841,7 @@ public class CareerController {
 
 <div align="center">
 
-**Última Actualización:** 9 de Marzo, 2026
+**Última Actualización:** 14 de Marzo, 2026
 
 [📚 Ver README](README.md) · [📋 Plan de Migración](MIGRATION_PLAN.md)
 

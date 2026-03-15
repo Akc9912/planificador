@@ -55,32 +55,31 @@ Este backend existe como prototipo legado en adaptacion y todavia no esta conect
 | Area              | Estado actual            | Evidencia                                                                                                    |
 | ----------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------ |
 | Build             | FUNCIONAL                | `./mvnw -DskipTests compile` en verde (`BUILD SUCCESS`)                                                      |
-| API Auth          | PARCIALMENTE FUNCIONAL   | `AuthController` + `AuthService` (login/register/change-password)                                            |
+| API Auth          | MODULAR FUNCIONAL        | `modules/auth` (`AuthModuleController`, `AuthSessionService`, `AuthJwtAuthenticationFilter`)                 |
 | API Usuarios      | FUNCIONAL EN BASE LEGACY | `UsuarioController` + `UsuarioService`                                                                       |
 | API Materias      | FUNCIONAL EN BASE LEGACY | `MateriaController` + `MateriaService`                                                                       |
 | API Careers       | FUNCIONAL (MVP BASICO)   | `modules/career` con `CareerController`, `CareerService`, `CareerRepository` y DTOs                          |
 | Capa Shared       | PARCIALMENTE FUNCIONAL   | `shared/api`, `shared/event`, `shared/util`, `shared/exception` + integracion inicial Career/Subject         |
 | API Eventos       | DESACOPLADA DEL MVP      | Endpoints legacy responden `410 GONE` mientras Event Module queda Post-MVP                                   |
 | API Recordatorios | DESACOPLADA DEL MVP      | Endpoints legacy responden `410 GONE` mientras Reminder Module queda Post-MVP                                |
-| Seguridad         | ENDURECIDA (PARCIAL)     | `JwtAuthenticationFilter` unificado (UUID + rol) + `CareerController` toma `userId` desde SecurityContext    |
+| Seguridad         | ENDURECIDA (MODULAR)     | `AuthJwtAuthenticationFilter` (UUID + rol) + reglas por rol en `SecurityConfig`                              |
 | Base de datos     | EN TRANSICION            | `pom.xml` y `application.properties` usan PostgreSQL, pero entidades siguen modelo `Integer` y tablas legacy |
-| Testing           | MUY BASICO               | Solo `PlanificadorApplicationTests` con `contextLoads()`                                                     |
+| Testing           | PARCIAL FUNCIONAL        | Suite auth modular en verde (`26/26`) + `PlanificadorApplicationTests`                                       |
 
 ### Bloqueadores actuales
 
 1. Formalizar contrato de endpoints legacy desacoplados (`410 GONE`) para Event/Reminder mientras se mantienen Post-MVP.
-2. Completar transicion de auth hacia JWT emitido por Supabase en flujo end-to-end (hoy la validacion es compatible, pero el login legacy sigue emitiendo token propio).
-3. Alinear modelo de datos Java (IDs y tablas) con el esquema objetivo en `humanis_db_init.sql`.
-4. Adaptar consumidores frontend al contrato endurecido de Career (sin `userId` en path/query params).
-5. Subir cobertura de tests para modulo Career y endpoints legacy criticos.
-6. Definir roadmap de reintroduccion de Event/Reminder como modulos Post-MVP.
+2. Alinear modelo de datos Java (IDs y tablas) con el esquema objetivo en `humanis_db_init.sql`.
+3. Adaptar consumidores frontend al contrato endurecido de Career/Auth cuando llegue su migracion.
+4. Subir cobertura de tests para modulo Career y rutas legacy criticas.
+5. Definir roadmap de reintroduccion de Event/Reminder como modulos Post-MVP.
 
 ### Proximos hitos actualizados
 
 1. Mantener `mvn compile` en verde con control continuo de regresiones.
-2. Cerrar migracion de autenticacion a Supabase JWT (validacion + emision/consumo en flujo real).
+2. Cubrir con tests de servicio/controlador los flujos de Career y rutas legacy criticas.
 3. Iniciar refactor de Subject/Equivalence hacia UUID + nombres de tablas objetivo.
-4. Cubrir con tests de servicio/controlador los flujos de Career y endpoints legacy criticos.
+4. Preparar handoff de contrato API de Career/Auth para frontend cuando toque su migracion.
 
 ---
 
@@ -140,12 +139,13 @@ Este backend existe como prototipo legado en adaptacion y todavia no esta conect
 **Estado actual:** Prototipo backend en adaptacion
 
 - Backend Spring Boot existente, todavia no integrado al flujo productivo.
-- APIs REST parciales en legacy: Auth/Usuarios/Materias con mayor avance.
+- Auth modular activo en `modules/auth`; Usuarios/Materias siguen en capa legacy.
 - Modulo `career` nuevo implementado en capas (`entity/repository/service/controller/dto`) con CRUD basico y ownership.
 - Endpoints legacy de Eventos/Recordatorios desacoplados del MVP (respuesta `410 GONE`).
 - Frontend sigue operando contra Supabase directo por ahora.
-- Filtro JWT unificado con claims compatibles de Supabase (`user_id`/`role`) y control de acceso admin en Career.
-- Flujo Auth en transicion: el login legacy aun emite JWT propio.
+- Filtro JWT modular con claims compatibles de Supabase (`user_id`/`role`) y control de acceso admin en Career.
+- Flujo Auth backend cerrado: validacion/autorizacion en backend y operaciones de credenciales delegadas a Supabase Auth.
+- Tests de auth modular en verde (`26/26`): service + filter + controller + security config.
 - Conexion a PostgreSQL configurada, con modelo de datos aun en transicion en parte del codigo legacy.
 
 ---
@@ -643,7 +643,7 @@ Ver documento completo: **[MIGRATION_PLAN.md](MIGRATION_PLAN.md)**
 
 Este repositorio contiene:
 
-- Backend legacy funcional parcial (Auth, Usuarios, Materias)
+- Backend legacy funcional parcial (Usuarios, Materias) + Auth modular independiente
 - Modulo `career` ya implementado en arquitectura modular con DTOs y controlador REST
 - Capa `shared` creada para contratos entre modulos (APIs, eventos, validaciones y excepciones de negocio)
 - Configuracion PostgreSQL aplicada en dependencias y datasource
@@ -651,7 +651,7 @@ Este repositorio contiene:
 
 **Necesita:**
 
-- Cerrar transicion de autenticacion para flujo Supabase JWT end-to-end
+- Consolidar handoff de contrato Auth/Career para integracion frontend cuando corresponda
 - Alinear consumidores frontend al contrato endurecido de Career (sin `userId` en request)
 - Definir implementacion Post-MVP para Event/Reminder (hoy desacoplados del core)
 - Continuar refactor de Subject/Equivalence hacia esquema objetivo UUID
@@ -705,10 +705,10 @@ Guía completa de arquitectura modular:
 - Consumir endpoints de Career sin enviar `userId` por path/query
 - Mantener endpoint admin de metricas solo para rol `ADMIN`
 
-3. **Cerrar transicion de Auth:**
+3. **Consolidar contrato de Auth modular:**
 
-- Definir y probar flujo end-to-end con JWT emitido por Supabase
-- Validar convencion de claims (`user_id` y `role`) en todos los ambientes
+- Mantener login/register/change-password como operaciones gestionadas por Supabase Auth
+- Estandarizar consumo de `/auth/me` y `/auth/token/validate` para validacion de sesion
 
 4. **Avanzar módulos MVP restantes y testing:**
 
