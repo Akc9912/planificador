@@ -1,5 +1,4 @@
-
-package aktech.planificador.Service.security;
+package aktech.planificador.modules.auth.service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -8,18 +7,16 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import aktech.planificador.Model.core.Usuario;
-
-@Service
+@Service("moduleAuthJwtService")
 public class JwtService {
     private final String jwtSecret;
     private final long expirationMs;
@@ -43,11 +40,11 @@ public class JwtService {
                 .getBody();
     }
 
-    public String generateToken(Usuario usuario) {
+    public String generateInternalToken(String subject, Object userId, String role) {
         return Jwts.builder()
-                .setSubject(usuario.getEmail())
-                .claim("id", usuario.getId())
-                .claim("rol", usuario.getRol().toString())
+                .setSubject(subject)
+                .claim("id", userId)
+                .claim("rol", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -66,7 +63,6 @@ public class JwtService {
         return emailClaim != null ? emailClaim.toString() : null;
     }
 
-    // Extrae el "username" (email ahora)
     public String extractUsername(String token) {
         return extractEmail(token);
     }
@@ -119,7 +115,6 @@ public class JwtService {
         }
     }
 
-    // para el filtro, valida el token con UserDetails
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         if (username == null || userDetails == null) {
@@ -128,13 +123,12 @@ public class JwtService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    // Para compatibilidad
-    public boolean validateToken(String token, Usuario usuario) {
-        final String email = extractEmail(token);
-        if (email == null || usuario == null) {
+    public boolean validateTokenForEmail(String token, String email) {
+        final String tokenEmail = extractEmail(token);
+        if (tokenEmail == null || email == null || email.isBlank()) {
             return false;
         }
-        return (email.equals(usuario.getEmail()) && !isTokenExpired(token));
+        return (tokenEmail.equals(email) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
@@ -166,7 +160,6 @@ public class JwtService {
         }
     }
 
-    // Para el filtro: genera el objeto de autenticación
     public UsernamePasswordAuthenticationToken getAuthentication(String token, UserDetails userDetails) {
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }

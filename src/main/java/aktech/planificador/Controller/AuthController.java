@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/legacy/auth")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -25,6 +25,11 @@ public class AuthController {
     @PostMapping("/register")
     public RegisterResponseDto register(@RequestBody RegisterRequestDto request) {
         return authService.register(request);
+    }
+
+    @PostMapping("/register-admin")
+    public RegisterResponseDto registerAdmin(@RequestBody RegisterRequestDto request) {
+        return authService.registerAdmin(request);
     }
 
     @PutMapping("/change-password")

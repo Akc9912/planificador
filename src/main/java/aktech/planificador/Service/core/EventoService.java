@@ -43,25 +43,25 @@ public class EventoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         Evento evento = new Evento(request.getTitulo(), request.getColor(), user);
-        evento = eventoRepository.save(evento);
+        Evento eventoGuardado = eventoRepository.save(evento);
 
         // Si hay una materia asociada, crear la relación
         if (request.getIdMateria() != null) {
             Materia materia = materiaRepository.findById(request.getIdMateria())
                     .orElseThrow(() -> new ResourceNotFoundException("Materia no encontrada"));
-            EventoMateria eventoMateria = new EventoMateria(evento, materia);
+            EventoMateria eventoMateria = new EventoMateria(eventoGuardado, materia);
             eventoMateriaRepository.save(eventoMateria);
         }
 
         // Guardar los horarios del evento
         if (request.getHorarios() != null && !request.getHorarios().isEmpty()) {
             List<HorarioPorEvento> horarios = request.getHorarios().stream()
-                    .map(horario -> new HorarioPorEvento(evento, horario.getInicio(), horario.getFin()))
+                    .map(horario -> new HorarioPorEvento(eventoGuardado, horario.getInicio(), horario.getFin()))
                     .toList();
             horarioPorEventoRepository.saveAll(horarios);
         }
 
-        return mapToDto(evento);
+        return mapToDto(eventoGuardado);
     }
 
     // editar evento
@@ -119,7 +119,7 @@ public class EventoService {
 
         if (eventoMateria != null && eventoMateria.getMateria() != null) {
             dto.setIdMateria(eventoMateria.getMateria().getId());
-            dto.setNombreMateria(eventoMateria.getMateria().getNombre());
+            dto.setNombreMateria(eventoMateria.getMateria().getTitulo());
         }
 
         return dto;

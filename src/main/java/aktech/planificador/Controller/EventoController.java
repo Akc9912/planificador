@@ -1,44 +1,52 @@
 package aktech.planificador.Controller;
 
-import java.util.List;
+import java.util.Map;
 
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import aktech.planificador.Dto.evento.EventoRequestDto;
-import aktech.planificador.Dto.evento.EventoResponseDto;
-import aktech.planificador.Service.core.EventoService;
 
 @RestController
 @RequestMapping("/eventos")
 public class EventoController {
-    private final EventoService eventoService;
+    private static final String MESSAGE = "Modulo Eventos desacoplado del MVP actual";
 
-    public EventoController(EventoService eventoService) {
-        this.eventoService = eventoService;
+    private ResponseEntity<Map<String, String>> endpointDisabled() {
+        return ResponseEntity.status(HttpStatus.GONE).body(Map.of("message", MESSAGE));
     }
 
     @PostMapping("/crear")
-    public EventoResponseDto crearEvento(@RequestBody EventoRequestDto request) {
-        return eventoService.crearEvento(request);
+    public ResponseEntity<Map<String, String>> crearEvento(@RequestBody EventoRequestDto request) {
+        return endpointDisabled();
     }
 
     @PutMapping("/modificar/{id}")
-    public EventoResponseDto modificarEvento(@PathVariable Integer id, @RequestBody EventoRequestDto request) {
-        return eventoService.modificarEvento(id, request);
+    public ResponseEntity<Map<String, String>> modificarEvento(@PathVariable Integer id,
+            @RequestBody EventoRequestDto request) {
+        return endpointDisabled();
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public void eliminarEvento(@PathVariable Integer id, @RequestParam Integer usuarioId) {
-        eventoService.eliminarEvento(id, usuarioId);
+    public ResponseEntity<Map<String, String>> eliminarEvento(@PathVariable Integer id) {
+        return endpointDisabled();
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public List<EventoResponseDto> obtenerEventosPorUsuario(@PathVariable Integer usuarioId) {
-        return eventoService.obtenerEventosPorUsuario(usuarioId);
+    public ResponseEntity<Map<String, String>> obtenerEventosPorUsuario(@PathVariable Integer usuarioId) {
+        return endpointDisabled();
     }
 
     @GetMapping("/materia/{materiaId}")
-    public List<EventoResponseDto> obtenerEventosPorMateria(@PathVariable Integer materiaId) {
-        return eventoService.obtenerEventosPorMateria(materiaId);
+    public ResponseEntity<Map<String, String>> obtenerEventosPorMateria(@PathVariable Integer materiaId) {
+        return endpointDisabled();
     }
 }

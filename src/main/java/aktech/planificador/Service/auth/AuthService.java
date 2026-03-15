@@ -18,9 +18,11 @@ import aktech.planificador.Dto.auth.RegisterRequestDto;
 import aktech.planificador.Dto.auth.RegisterResponseDto;
 import aktech.planificador.Dto.usuarios.UserSettingsResponseDto;
 import aktech.planificador.Dto.usuarios.UsuarioResponseDto;
+import aktech.planificador.Model.core.Admin;
 import aktech.planificador.Model.core.NormalUser;
 import aktech.planificador.Model.core.UserSettings;
 import aktech.planificador.Model.core.Usuario;
+import aktech.planificador.Model.enums.Rol;
 
 import java.util.Optional;
 
@@ -60,6 +62,12 @@ public class AuthService {
                 throw new IllegalArgumentException("Credenciales inválidas");
             }
             Usuario usuario = usuarioOpt.get();
+
+            // Solo se permiten los perfiles de sistema: USER y ADMIN
+            if (!isSystemRole(usuario.getRol())) {
+                logger.warn("Login fallido: rol no permitido {} para email {}", usuario.getRol(), request.getEmail());
+                throw new IllegalArgumentException("Tipo de usuario no permitido para este sistema");
+            }
 
             // Usuario inactivo
             if (usuario.getActivo() != null && !usuario.getActivo()) {
@@ -147,6 +155,33 @@ public class AuthService {
         }
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    public RegisterResponseDto registerAdmin(RegisterRequestDto request) {
+        if (request.getEmail() == null || request.getEmail().isEmpty() ||
+                request.getPassword() == null || request.getPassword().isEmpty() ||
+                request.getNombre() == null || request.getNombre().isEmpty() ||
+                request.getApellido() == null || request.getApellido().isEmpty()) {
+            return new RegisterResponseDto("Faltan datos obligatorios para el registro", false);
+        }
+
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(request.getEmail());
+        if (usuarioExistente.isPresent()
+                && (usuarioExistente.get().getActivo() == null || usuarioExistente.get().getActivo())) {
+            return new RegisterResponseDto("El email ya está registrado", false);
+        }
+
+        String hashedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt());
+        Admin nuevoAdmin = new Admin(request.getEmail(), hashedPassword, request.getNombre(), request.getApellido());
+
+        try {
+            usuarioRepository.save(nuevoAdmin);
+            UserSettings defaultSettings = userSettingsService.setDefaultSettings(nuevoAdmin);
+            userSettingsRepository.save(defaultSettings);
+            return new RegisterResponseDto("Administrador registrado con éxito", true);
+        } catch (Exception e) {
+            return new RegisterResponseDto("Error al registrar administrador: " + e.getMessage(), false);
+        }
+    }
 
     @org.springframework.transaction.annotation.Transactional
     public ChangePasswordResponseDto changePassword(ChangePasswordRequestDto request) {
@@ -167,5 +202,9 @@ public class AuthService {
         usuario.setPasswordHash(hashedNewPassword);
         usuarioRepository.save(usuario);
         return new ChangePasswordResponseDto("Contraseña cambiada con éxito", true);
+    }
+
+    private boolean isSystemRole(Rol rol) {
+        return Rol.USER.equals(rol) || Rol.ADMIN.equals(rol);
     }
 }
