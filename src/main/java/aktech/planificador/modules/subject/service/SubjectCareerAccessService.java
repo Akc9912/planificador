@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import aktech.planificador.Exception.ResourceNotFoundException;
 import aktech.planificador.shared.api.CareerApi;
+import aktech.planificador.shared.exception.NotFoundException;
 
 @Service
 public class SubjectCareerAccessService {
@@ -18,11 +18,11 @@ public class SubjectCareerAccessService {
 
     public void validateCareerOwnership(UUID userId, UUID careerId) {
         if (!careerApi.existsCareer(careerId)) {
-            throw new ResourceNotFoundException("Carrera no encontrada");
+            throw new NotFoundException("Carrera no encontrada");
         }
 
         if (!careerApi.userOwnsCareer(userId, careerId)) {
-            throw new ResourceNotFoundException("La carrera no pertenece al usuario");
+            throw new NotFoundException("La carrera no pertenece al usuario");
         }
     }
 }

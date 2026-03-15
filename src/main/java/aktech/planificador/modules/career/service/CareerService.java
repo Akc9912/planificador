@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.context.ApplicationEventPublisher;
 
-import aktech.planificador.Exception.ResourceNotFoundException;
 import aktech.planificador.modules.career.dto.CareerCreateRequestDto;
 import aktech.planificador.modules.career.dto.CareerResponseDto;
 import aktech.planificador.modules.career.dto.CareerUpdateRequestDto;
@@ -18,6 +17,7 @@ import aktech.planificador.modules.career.repository.CareerRepository;
 import aktech.planificador.shared.api.CareerApi;
 import aktech.planificador.shared.dto.CareerBasicDto;
 import aktech.planificador.shared.event.CareerDeletedEvent;
+import aktech.planificador.shared.exception.NotFoundException;
 import aktech.planificador.shared.util.ValidationUtils;
 
 @Service
@@ -64,7 +64,7 @@ public class CareerService implements CareerApi {
         requireCareerId(id);
         requireUserId(userId);
         return careerRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Carrera no encontrada o sin permisos"));
+                .orElseThrow(() -> new NotFoundException("Carrera no encontrada o sin permisos"));
     }
 
     public boolean ownsCareer(UUID id, UUID userId) {
@@ -78,7 +78,7 @@ public class CareerService implements CareerApi {
         requireCareerId(careerId);
 
         Career career = careerRepository.findById(careerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Carrera no encontrada"));
+                .orElseThrow(() -> new NotFoundException("Carrera no encontrada"));
 
         return toCareerBasicDto(career);
     }

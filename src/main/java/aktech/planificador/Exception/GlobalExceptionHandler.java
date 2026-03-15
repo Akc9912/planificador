@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import aktech.planificador.shared.exception.BusinessException;
+import aktech.planificador.shared.exception.NotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -18,6 +19,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFound(ResourceNotFoundException ex, WebRequest request) {
         logger.warn("ResourceNotFoundException: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<?> handleSharedNotFound(NotFoundException ex, WebRequest request) {
+        logger.warn("NotFoundException: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 

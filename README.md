@@ -64,7 +64,7 @@ Este backend existe como prototipo legado en adaptacion y todavia no esta conect
 | API Recordatorios | DESACOPLADA DEL MVP      | Endpoints legacy responden `410 GONE` mientras Reminder Module queda Post-MVP                                |
 | Seguridad         | ENDURECIDA (MODULAR)     | `AuthJwtAuthenticationFilter` (UUID + rol) + reglas por rol en `SecurityConfig`                              |
 | Base de datos     | EN TRANSICION            | `pom.xml` y `application.properties` usan PostgreSQL, pero entidades siguen modelo `Integer` y tablas legacy |
-| Testing           | PARCIAL FUNCIONAL        | Suite auth modular en verde (`26/26`) + `PlanificadorApplicationTests`                                       |
+| Testing           | PARCIAL FUNCIONAL        | Suite modular Auth/Career + `ModuleBoundariesTest` en CI (`modular-quality-gates.yml`)                      |
 
 ### Bloqueadores actuales
 
@@ -73,6 +73,7 @@ Este backend existe como prototipo legado en adaptacion y todavia no esta conect
 3. Adaptar consumidores frontend al contrato endurecido de Career/Auth cuando llegue su migracion.
 4. Subir cobertura de tests para modulo Career y rutas legacy criticas.
 5. Definir roadmap de reintroduccion de Event/Reminder como modulos Post-MVP.
+6. Extender los checks CI modulares actuales a Subject/Equivalence al iniciar su migracion.
 
 ### Proximos hitos actualizados
 
@@ -80,6 +81,7 @@ Este backend existe como prototipo legado en adaptacion y todavia no esta conect
 2. Cubrir con tests de servicio/controlador los flujos de Career y rutas legacy criticas.
 3. Iniciar refactor de Subject/Equivalence hacia UUID + nombres de tablas objetivo.
 4. Preparar handoff de contrato API de Career/Auth para frontend cuando toque su migracion.
+5. Escalar el workflow de calidad modular en CI para validar nuevos modulos migrados.
 
 ---
 
@@ -145,7 +147,7 @@ Este backend existe como prototipo legado en adaptacion y todavia no esta conect
 - Frontend sigue operando contra Supabase directo por ahora.
 - Filtro JWT modular con claims compatibles de Supabase (`user_id`/`role`) y control de acceso admin en Career.
 - Flujo Auth backend cerrado: validacion/autorizacion en backend y operaciones de credenciales delegadas a Supabase Auth.
-- Tests de auth modular en verde (`26/26`): service + filter + controller + security config.
+- Tests modulares en verde para Auth/Career, con `ModuleBoundariesTest` automatizado en CI (`modular-quality-gates.yml`).
 - Conexion a PostgreSQL configurada, con modelo de datos aun en transicion en parte del codigo legacy.
 
 ---

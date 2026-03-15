@@ -203,6 +203,7 @@ Ver [ARCHITECTURE.md](ARCHITECTURE.md) para detalles completos.
 - Hardening en `CareerController`: ownership por `userId` tomado desde SecurityContext.
 - Swagger/OpenAPI habilitado (`/swagger-ui.html` y `/v3/api-docs`).
 - Suite de tests de auth modular en verde (`26/26`): servicio de sesion, filtro JWT, controlador y reglas de seguridad.
+- Guardrail de arquitectura automatizado en CI con `.github/workflows/modular-quality-gates.yml` (`ModuleBoundariesTest` + suite modular Auth/Career).
 - CRUD base de usuarios y materias para backend legacy.
 - Modulo `career` implementado en capas con DTOs y endpoints CRUD/ownership.
 - Base de comunicacion modular creada (`shared/api`, `shared/event`, `shared/util`, `shared/exception`).
@@ -212,19 +213,19 @@ Ver [ARCHITECTURE.md](ARCHITECTURE.md) para detalles completos.
 
 1. Brecha entre esquema objetivo UUID (`humanis_db_init.sql`) y entidades actuales con `Integer`.
 2. Cobertura de tests aun baja para modulo Career y rutas legacy criticas.
-3. Validar y mantener regla de no imports directos entre modulos.
-4. Definir roadmap de reintroduccion de Event/Reminder como modulos Post-MVP.
-5. Preparar handoff de contratos API (`Career` + `Auth`) para integracion frontend cuando corresponda.
+3. Definir roadmap de reintroduccion de Event/Reminder como modulos Post-MVP.
+4. Preparar handoff de contratos API (`Career` + `Auth`) para integracion frontend cuando corresponda.
+5. Extender checks CI modulares a medida que entren Subject/Equivalence, manteniendo la regla de no acoplamiento.
 
 **Nota de alcance:** la adaptacion de frontend a contratos backend se ejecuta cuando inicie la migracion del frontend; no bloquea el cierre tecnico de Career.
 
 ### Prioridades inmediatas
 
 1. Agregar tests de servicios y controladores para flujos criticos de Career.
-2. Validar y mantener regla de no imports directos entre modulos.
-3. Mantener build en verde con control de regresiones.
-4. Preparar handoff del contrato API de Career/Auth para consumir desde frontend cuando toque su migracion.
-5. Planificar el inicio de Subject/Equivalence sobre esquema UUID una vez cerrado Career.
+2. Mantener build en verde con control de regresiones.
+3. Preparar handoff del contrato API de Career/Auth para consumir desde frontend cuando toque su migracion.
+4. Planificar el inicio de Subject/Equivalence sobre esquema UUID una vez cerrado Career.
+5. Expandir el workflow de calidad modular para nuevos modulos (sumar Subject/Equivalence al migrarlos).
 
 ### Decisión de Base de Datos
 
@@ -1787,7 +1788,8 @@ public class SubjectFacade {
 [ ] Avanzar Equivalence Module sobre esquema UUID objetivo (diferido hasta cerrar Career)
 [x] Configurar Swagger/OpenAPI para endpoints nuevos
 [ ] Escribir unit tests por módulo (prioridad: Career)
-[ ] Validar y mantener regla de no imports directos entre módulos
+[x] Validar y mantener regla de no imports directos entre módulos (guardrail automatizado)
+[x] Agregar test de arquitectura para aislar módulos nuevos de capas legacy (`ModuleBoundariesTest`)
 ```
 
 ### Recomendaciones de Implementación
