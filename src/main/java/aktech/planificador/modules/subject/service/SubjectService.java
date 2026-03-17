@@ -5,12 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,16 @@ public class SubjectService implements SubjectApi {
     private static final int MAX_CODE_LENGTH = 40;
     private static final int MAX_COLOR_LENGTH = 20;
     private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("^#[0-9A-Fa-f]{6}$");
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
+            "name",
+            "code",
+            "status",
+            "year",
+            "semester",
+            "credits",
+            "hours",
+            "createdAt",
+            "updatedAt");
 
     private final SubjectRepository subjectRepository;
     private final SubjectCareerAccessService subjectCareerAccessService;
@@ -64,6 +76,37 @@ public class SubjectService implements SubjectApi {
         String status = SubjectStatus.normalize(rawStatus);
         subjectCareerAccessService.validateCareerOwnership(userId, careerId);
         return subjectRepository.findByCareerIdAndStatus(careerId, status).stream().map(this::toResponseDto).toList();
+    }
+
+    public List<SubjectResponseDto> listByCareerWithFilters(
+            UUID userId,
+            UUID careerId,
+            String rawName,
+            String rawCode,
+            String rawStatus,
+            Integer year,
+            Integer semester,
+            String rawSortBy,
+            String rawSortDirection) {
+        requireUserId(userId);
+        requireCareerId(careerId);
+        subjectCareerAccessService.validateCareerOwnership(userId, careerId);
+
+        String name = normalizeSearchTerm(rawName);
+        String code = normalizeSearchTerm(rawCode);
+        String status = normalizeStatusFilter(rawStatus);
+        Integer normalizedYear = validateNonNegativeInteger(year, "anio");
+        Integer normalizedSemester = validateNonNegativeInteger(semester, "semestre");
+        Sort sort = resolveSort(rawSortBy, rawSortDirection);
+
+        return subjectRepository.searchByCareerWithFilters(
+                careerId,
+                status,
+                name,
+                code,
+                normalizedYear,
+                normalizedSemester,
+                sort).stream().map(this::toResponseDto).toList();
     }
 
     public CareerProgressResponseDto getCareerProgress(UUID userId, UUID careerId) {
@@ -321,6 +364,51 @@ public class SubjectService implements SubjectApi {
         }
 
         return normalized;
+    }
+
+    private String normalizeSearchTerm(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        String normalized = value.trim();
+        if (normalized.isEmpty()) {
+            return null;
+        }
+
+        return normalized;
+    }
+
+    private String normalizeStatusFilter(String rawStatus) {
+        if (rawStatus == null || rawStatus.isBlank()) {
+            return null;
+        }
+        return SubjectStatus.normalize(rawStatus);
+    }
+
+    private Sort resolveSort(String rawSortBy, String rawSortDirection) {
+        String sortBy = normalizeSearchTerm(rawSortBy);
+        if (sortBy == null) {
+            sortBy = "name";
+        }
+
+        if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+            throw new IllegalArgumentException("Campo de ordenamiento invalido");
+        }
+
+        Sort.Direction direction = resolveSortDirection(rawSortDirection);
+        return Sort.by(direction, sortBy);
+    }
+
+    private Sort.Direction resolveSortDirection(String rawSortDirection) {
+        String sortDirection = normalizeSearchTerm(rawSortDirection);
+        if (sortDirection == null || "asc".equalsIgnoreCase(sortDirection)) {
+            return Sort.Direction.ASC;
+        }
+        if ("desc".equalsIgnoreCase(sortDirection)) {
+            return Sort.Direction.DESC;
+        }
+        throw new IllegalArgumentException("Direccion de ordenamiento invalida");
     }
 
     private Integer validateIntegerGrade(Integer value, String fieldName) {

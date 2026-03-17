@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,6 +51,29 @@ public class SubjectController {
             @PathVariable String status) {
         UUID userId = getAuthenticatedUserId();
         return subjectService.listByCareerAndStatus(userId, careerId, status);
+    }
+
+    @GetMapping("/career/{careerId}/search")
+    public List<SubjectResponseDto> searchByCareer(
+            @PathVariable UUID careerId,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer semester,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String sortDir) {
+        UUID userId = getAuthenticatedUserId();
+        return subjectService.listByCareerWithFilters(
+                userId,
+                careerId,
+                name,
+                code,
+                status,
+                year,
+                semester,
+                sortBy,
+                sortDir);
     }
 
     @GetMapping("/career/{careerId}/progress")

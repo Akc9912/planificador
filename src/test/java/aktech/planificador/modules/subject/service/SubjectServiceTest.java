@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,6 +21,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Sort;
 
 import aktech.planificador.modules.subject.dto.CareerProgressResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectCreateRequestDto;
@@ -254,6 +256,132 @@ class SubjectServiceTest {
         verify(subjectCareerAccessService).validateCareerOwnership(userId, careerId);
         assertEquals(1, result.size());
         assertEquals("Fisica", result.get(0).getName());
+    }
+
+    @Test
+    void listByCareerWithFilters_shouldApplyFiltersAndSort() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+
+        Subject subject = createSubject(UUID.randomUUID(), careerId, "Analisis II", "cursando");
+
+        when(subjectRepository.searchByCareerWithFilters(
+                eq(careerId),
+                eq("cursando"),
+                eq("Analisis"),
+                eq("MAT"),
+                eq(2),
+                eq(1),
+                any(Sort.class)))
+                .thenReturn(List.of(subject));
+
+        List<SubjectResponseDto> result = subjectService.listByCareerWithFilters(
+                userId,
+                careerId,
+                "  Analisis  ",
+                "  MAT  ",
+                "CURSANDO",
+                2,
+                1,
+                "year",
+                "desc");
+
+        ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
+        verify(subjectCareerAccessService).validateCareerOwnership(userId, careerId);
+        verify(subjectRepository).searchByCareerWithFilters(
+                eq(careerId),
+                eq("cursando"),
+                eq("Analisis"),
+                eq("MAT"),
+                eq(2),
+                eq(1),
+                sortCaptor.capture());
+
+        Sort.Order order = sortCaptor.getValue().getOrderFor("year");
+        assertEquals(1, result.size());
+        assertEquals(Sort.Direction.DESC, order.getDirection());
+    }
+
+    @Test
+    void listByCareerWithFilters_shouldUseDefaultSortWhenNotProvided() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+
+        when(subjectRepository.searchByCareerWithFilters(
+                eq(careerId),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(null),
+                any(Sort.class)))
+                .thenReturn(List.of());
+
+        subjectService.listByCareerWithFilters(
+                userId,
+                careerId,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
+        verify(subjectRepository).searchByCareerWithFilters(
+                eq(careerId),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq(null),
+                sortCaptor.capture());
+
+        Sort.Order order = sortCaptor.getValue().getOrderFor("name");
+        assertEquals(Sort.Direction.ASC, order.getDirection());
+    }
+
+    @Test
+    void listByCareerWithFilters_shouldThrowWhenSortFieldIsInvalid() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> subjectService.listByCareerWithFilters(
+                        userId,
+                        careerId,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        "invalidField",
+                        "asc"));
+
+        assertEquals("Campo de ordenamiento invalido", ex.getMessage());
+    }
+
+    @Test
+    void listByCareerWithFilters_shouldThrowWhenSortDirectionIsInvalid() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> subjectService.listByCareerWithFilters(
+                        userId,
+                        careerId,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        "name",
+                        "sideways"));
+
+        assertEquals("Direccion de ordenamiento invalida", ex.getMessage());
     }
 
     @Test

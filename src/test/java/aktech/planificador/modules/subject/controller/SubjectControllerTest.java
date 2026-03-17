@@ -92,6 +92,32 @@ class SubjectControllerTest {
     }
 
     @Test
+    void searchByCareer_shouldDelegateUsingAuthenticatedUser() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+        setAuthenticatedUser(userId.toString());
+
+        List<SubjectResponseDto> expected = List.of(new SubjectResponseDto());
+        when(subjectService.listByCareerWithFilters(userId, careerId, "Analisis", "MAT", "cursando", 2, 1, "year",
+                "desc"))
+                .thenReturn(expected);
+
+        List<SubjectResponseDto> response = subjectController.searchByCareer(
+                careerId,
+                "Analisis",
+                "MAT",
+                "cursando",
+                2,
+                1,
+                "year",
+                "desc");
+
+        assertSame(expected, response);
+        verify(subjectService).listByCareerWithFilters(userId, careerId, "Analisis", "MAT", "cursando", 2, 1,
+                "year", "desc");
+    }
+
+    @Test
     void getCareerProgress_shouldDelegateUsingAuthenticatedUser() {
         UUID userId = UUID.randomUUID();
         UUID careerId = UUID.randomUUID();
