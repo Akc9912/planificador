@@ -19,7 +19,9 @@ import aktech.planificador.modules.subject.enums.SubjectStatus;
 import aktech.planificador.modules.subject.model.Subject;
 import aktech.planificador.modules.subject.repository.SubjectRepository;
 import aktech.planificador.shared.api.SubjectApi;
+import aktech.planificador.shared.dto.SubjectBasicDto;
 import aktech.planificador.shared.event.SubjectStatusChangedEvent;
+import aktech.planificador.shared.exception.NotFoundException;
 import aktech.planificador.shared.util.ValidationUtils;
 
 @Service
@@ -66,6 +68,21 @@ public class SubjectService implements SubjectApi {
         requireSubjectId(subjectId);
         requireUserId(userId);
         return subjectCareerAccessService.userOwnsSubject(userId, subjectId);
+    }
+
+    @Override
+    public SubjectBasicDto getSubjectBasic(UUID subjectId) {
+        requireSubjectId(subjectId);
+
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new NotFoundException("Materia no encontrada"));
+
+        return new SubjectBasicDto(
+                subject.getId(),
+                subject.getCareerId(),
+                subject.getName(),
+                subject.getCode(),
+                subject.getStatus());
     }
 
     @Transactional
