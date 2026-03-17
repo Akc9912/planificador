@@ -849,6 +849,6 @@ public class CareerController {
 
 **Última Actualización:** 14 de Marzo, 2026
 
-[📚 Ver README](README.md) · [📋 Plan de Migración](MIGRATION_PLAN.md)
+[📚 Ver README](README.md) · [📋 Documentacion de Iteracion](docs/iteracion-01-migracion-backend-mvp/README.md)
 
 </div>

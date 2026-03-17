@@ -605,7 +605,7 @@ OpenAPI JSON disponible en: `http://localhost:8081/v3/api-docs`
 
 ## 📋 Plan de Migración
 
-Ver documento completo: **[MIGRATION_PLAN.md](MIGRATION_PLAN.md)**
+Ver documentacion de iteracion: **[Iteracion 01 - Migracion Backend MVP](docs/iteracion-01-migracion-backend-mvp/README.md)**
 
 ### Resumen de Fases
 
@@ -669,16 +669,14 @@ Este repositorio contiene:
 
 Este proyecto cuenta con documentación detallada para guiar el desarrollo:
 
-### 📋 [MIGRATION_PLAN.md](MIGRATION_PLAN.md)
+### 📋 [Documentacion de Iteracion](docs/iteracion-01-migracion-backend-mvp/README.md)
 
-Plan completo de migración en 4 fases:
+Estado detallado del plan de migracion modular, dividido en 4 fases con tareas ejecutables:
 
-- **Fase 1:** Setup y configuración base (1-2 semanas)
-- **Fase 2:** Implementación de lógica de negocio (2-3 semanas)
-- **Fase 3:** Migración del frontend (2-3 semanas)
-- **Fase 4:** Features avanzadas (futuro)
-
-Incluye estrategias de rollback, feature flags. La arquitectura modular facilita mantenimiento y permite extracción a servicios separados si en algún momento lejano se necesita por escala.
+- **Fase 1:** Setup y configuracion modular (cerrada)
+- **Fase 2:** MVP - Modulos core
+- **Fase 3:** Modulos complementarios y auditoria
+- **Fase 4:** Soporte y produccion
 
 ### 🏗️ [ARCHITECTURE.md](ARCHITECTURE.md)
 
@@ -703,7 +701,7 @@ Guía completa de arquitectura modular:
 
 1. **Leer documentación:**
    - ✅ Este README (overview general)
-   - ✅ [MIGRATION_PLAN.md](MIGRATION_PLAN.md) (fases y timeline)
+   - ✅ [Documentacion de iteracion](docs/iteracion-01-migracion-backend-mvp/README.md) (fases y estado actual)
    - ✅ [ARCHITECTURE.md](ARCHITECTURE.md) (patrones y estructura)
 
 2. **Adaptar consumo de Career al contrato actual:**
@@ -721,7 +719,7 @@ Guía completa de arquitectura modular:
 - Subject y Equivalence sobre modelo objetivo
 - Tests unitarios de `CareerService` y `CareerController`
 
-Ver checklist completo en [MIGRATION_PLAN.md](MIGRATION_PLAN.md#checklist-actual-del-desarrollo).
+Ver estado de tareas en [Documentacion de iteracion](docs/iteracion-01-migracion-backend-mvp/README.md).
 
 ---
 
@@ -743,6 +741,6 @@ Ver detalles completos en [ARCHITECTURE.md](ARCHITECTURE.md).
 
 **Hecho con ❤️ para la comunidad estudiantil**
 
-[🗄️ Ver Schema DB](humanis_db_init.sql) · [📋 Plan de Migración](MIGRATION_PLAN.md) · [🏗️ Arquitectura](ARCHITECTURE.md)
+[🗄️ Ver Schema DB](humanis_db_init.sql) · [📋 Documentacion](docs/iteracion-01-migracion-backend-mvp/README.md) · [🏗️ Arquitectura](ARCHITECTURE.md)
 
 </div>

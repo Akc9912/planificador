@@ -8,13 +8,21 @@ Completar el modulo final de soporte y dejar el backend listo para operar con me
 
 Esta fase sigue pendiente. Parte de la base tecnica ya existe, como Swagger y seguridad modular, pero todavia faltan optimizaciones, monitoreo y documentacion de salida a produccion.
 
+## Estado real auditado del repo - 17/03/2026
+
+- Existe configuracion Swagger/OpenAPI en `OpenApiConfig` y dependencia `springdoc-openapi-starter-webmvc-ui` en `pom.xml`.
+- La base de seguridad modular ya existe: JWT, filtro auth y pruebas de seguridad en verde.
+- No se detecta modulo `support` en `src/main/java/aktech/planificador/modules`.
+- No aparece evidencia actual de `actuator` ni propiedades `management.*` para observabilidad.
+- No aparece evidencia actual de cache o paginacion como parte cerrada de esta fase.
+
 ## Tareas de la fase
 
-- [ ] [4.1 Implementar Support Module](./4.1.md)
-- [ ] [4.2 Optimizacion de Performance](./4.2.md)
-- [ ] [4.3 Hardening de Seguridad](./4.3.md)
-- [ ] [4.4 Observabilidad](./4.4.md)
-- [ ] [4.5 Documentacion de Produccion](./4.5.md)
+- [ ] [4.1 Implementar Support Module](./4.1.md) - Pendiente.
+- [ ] [4.2 Optimizacion de Performance](./4.2.md) - Pendiente.
+- [ ] [4.3 Hardening de Seguridad](./4.3.md) - Parcial: la base de seguridad existe, pero la fase de endurecimiento completo no esta cerrada.
+- [ ] [4.4 Observabilidad](./4.4.md) - Pendiente real: no hay evidencia actual de Actuator o `management.*`.
+- [ ] [4.5 Documentacion de Produccion](./4.5.md) - Parcial: Swagger/OpenAPI y docs base existen, pero no esta cerrada la salida documental de produccion.
 
 ## Checklist de avance
 

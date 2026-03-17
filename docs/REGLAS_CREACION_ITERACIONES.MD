@@ -97,7 +97,7 @@ Una tarea no se considera completa si falta cualquiera de estos puntos:
 ## Proceso estandar para crear una nueva iteracion
 
 1. Definir nombre de iteracion y alcance.
-2. Extraer de la fuente de plan (por ejemplo MIGRATION_PLAN.md) la lista exacta de fases y tareas.
+2. Extraer de la fuente de plan (por ejemplo un documento de plan de trabajo) la lista exacta de fases y tareas.
 3. Crear carpeta de iteracion con su README (plan de esa iteracion).
 4. Crear carpetas por fase.
 5. Crear README.md en cada fase con links a tareas y checklist.
