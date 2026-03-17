@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import aktech.planificador.modules.subject.dto.CareerProgressResponseDto;
+import aktech.planificador.modules.subject.dto.SubjectAvailabilityResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectCreateRequestDto;
 import aktech.planificador.modules.subject.dto.SubjectResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectUpdateRequestDto;
@@ -50,6 +52,12 @@ public class SubjectController {
         return subjectService.listByCareerAndStatus(userId, careerId, status);
     }
 
+    @GetMapping("/career/{careerId}/progress")
+    public CareerProgressResponseDto getCareerProgress(@PathVariable UUID careerId) {
+        UUID userId = getAuthenticatedUserId();
+        return subjectService.getCareerProgress(userId, careerId);
+    }
+
     @GetMapping("/{id}")
     public SubjectResponseDto getByIdOwned(@PathVariable UUID id) {
         UUID userId = getAuthenticatedUserId();
@@ -60,6 +68,20 @@ public class SubjectController {
     public boolean ownsSubject(@PathVariable UUID id) {
         UUID userId = getAuthenticatedUserId();
         return subjectService.ownsSubject(id, userId);
+    }
+
+    @GetMapping("/{id}/availability")
+    public SubjectAvailabilityResponseDto getAvailability(@PathVariable UUID id) {
+        UUID userId = getAuthenticatedUserId();
+        return subjectService.getAvailability(id, userId);
+    }
+
+    @GetMapping("/{id}/unlocks/{status}")
+    public List<SubjectResponseDto> listUnlockedByStatusChange(
+            @PathVariable UUID id,
+            @PathVariable String status) {
+        UUID userId = getAuthenticatedUserId();
+        return subjectService.listUnlockedByStatusChange(id, userId, status);
     }
 
     @PutMapping("/{id}")

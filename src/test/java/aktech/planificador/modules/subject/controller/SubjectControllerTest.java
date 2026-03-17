@@ -18,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import aktech.planificador.modules.subject.dto.CareerProgressResponseDto;
+import aktech.planificador.modules.subject.dto.SubjectAvailabilityResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectCreateRequestDto;
 import aktech.planificador.modules.subject.dto.SubjectResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectUpdateRequestDto;
@@ -90,6 +92,24 @@ class SubjectControllerTest {
     }
 
     @Test
+    void getCareerProgress_shouldDelegateUsingAuthenticatedUser() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+        setAuthenticatedUser(userId.toString());
+
+        CareerProgressResponseDto expected = new CareerProgressResponseDto();
+        expected.setCareerId(careerId);
+        expected.setProgressPercentageBySubjects(50.0);
+
+        when(subjectService.getCareerProgress(userId, careerId)).thenReturn(expected);
+
+        CareerProgressResponseDto response = subjectController.getCareerProgress(careerId);
+
+        assertSame(expected, response);
+        verify(subjectService).getCareerProgress(userId, careerId);
+    }
+
+    @Test
     void getByIdOwned_shouldDelegateUsingAuthenticatedUser() {
         UUID userId = UUID.randomUUID();
         UUID subjectId = UUID.randomUUID();
@@ -144,6 +164,39 @@ class SubjectControllerTest {
 
         assertEquals(true, response);
         verify(subjectService).ownsSubject(subjectId, userId);
+    }
+
+    @Test
+    void getAvailability_shouldDelegateUsingAuthenticatedUser() {
+        UUID userId = UUID.randomUUID();
+        UUID subjectId = UUID.randomUUID();
+        setAuthenticatedUser(userId.toString());
+
+        SubjectAvailabilityResponseDto expected = new SubjectAvailabilityResponseDto();
+        expected.setSubjectId(subjectId);
+        expected.setBlocked(true);
+
+        when(subjectService.getAvailability(subjectId, userId)).thenReturn(expected);
+
+        SubjectAvailabilityResponseDto response = subjectController.getAvailability(subjectId);
+
+        assertSame(expected, response);
+        verify(subjectService).getAvailability(subjectId, userId);
+    }
+
+    @Test
+    void listUnlockedByStatusChange_shouldDelegateUsingAuthenticatedUser() {
+        UUID userId = UUID.randomUUID();
+        UUID subjectId = UUID.randomUUID();
+        setAuthenticatedUser(userId.toString());
+
+        List<SubjectResponseDto> expected = List.of(new SubjectResponseDto());
+        when(subjectService.listUnlockedByStatusChange(subjectId, userId, "aprobada")).thenReturn(expected);
+
+        List<SubjectResponseDto> response = subjectController.listUnlockedByStatusChange(subjectId, "aprobada");
+
+        assertSame(expected, response);
+        verify(subjectService).listUnlockedByStatusChange(subjectId, userId, "aprobada");
     }
 
     @Test

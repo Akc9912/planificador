@@ -3,15 +3,20 @@ package aktech.planificador.modules.subject.service;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import aktech.planificador.modules.subject.dto.CareerProgressResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectCreateRequestDto;
+import aktech.planificador.modules.subject.dto.SubjectAvailabilityResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectUpdateRequestDto;
 import aktech.planificador.modules.subject.enums.SubjectApprovalMethod;
@@ -60,6 +65,52 @@ public class SubjectService implements SubjectApi {
         return subjectRepository.findByCareerIdAndStatus(careerId, status).stream().map(this::toResponseDto).toList();
     }
 
+    public CareerProgressResponseDto getCareerProgress(UUID userId, UUID careerId) {
+        requireUserId(userId);
+        requireCareerId(careerId);
+        subjectCareerAccessService.validateCareerOwnership(userId, careerId);
+
+        List<Subject> careerSubjects = subjectRepository.findByCareerId(careerId);
+        Map<UUID, Subject> subjectsById = toSubjectMap(careerSubjects);
+
+        int totalSubjects = careerSubjects.size();
+        int approvedSubjects = countByStatus(careerSubjects, SubjectStatus.APROBADA);
+        int pendingSubjects = countByStatus(careerSubjects, SubjectStatus.PENDIENTE);
+        int inProgressSubjects = countByStatus(careerSubjects, SubjectStatus.CURSANDO);
+        int regularSubjects = countByStatus(careerSubjects, SubjectStatus.REGULAR);
+        int libreSubjects = countByStatus(careerSubjects, SubjectStatus.LIBRE);
+
+        int blockedSubjects = (int) careerSubjects.stream()
+                .filter(subject -> !isApprovedStatus(subject.getStatus()))
+                .filter(subject -> isBlocked(subject, subjectsById, null, null))
+                .count();
+        int availableSubjects = Math.max(0, (totalSubjects - approvedSubjects) - blockedSubjects);
+
+        int totalCredits = sumMetric(careerSubjects, Subject::getCredits);
+        int approvedCredits = sumApprovedMetric(careerSubjects, Subject::getCredits);
+        int totalHours = sumMetric(careerSubjects, Subject::getHours);
+        int approvedHours = sumApprovedMetric(careerSubjects, Subject::getHours);
+
+        CareerProgressResponseDto dto = new CareerProgressResponseDto();
+        dto.setCareerId(careerId);
+        dto.setTotalSubjects(totalSubjects);
+        dto.setApprovedSubjects(approvedSubjects);
+        dto.setPendingSubjects(pendingSubjects);
+        dto.setInProgressSubjects(inProgressSubjects);
+        dto.setRegularSubjects(regularSubjects);
+        dto.setLibreSubjects(libreSubjects);
+        dto.setBlockedSubjects(blockedSubjects);
+        dto.setAvailableSubjects(availableSubjects);
+        dto.setTotalCredits(totalCredits);
+        dto.setApprovedCredits(approvedCredits);
+        dto.setTotalHours(totalHours);
+        dto.setApprovedHours(approvedHours);
+        dto.setProgressPercentageBySubjects(calculatePercentage(approvedSubjects, totalSubjects));
+        dto.setProgressPercentageByCredits(calculatePercentage(approvedCredits, totalCredits));
+        dto.setProgressPercentageByHours(calculatePercentage(approvedHours, totalHours));
+        return dto;
+    }
+
     public SubjectResponseDto getOwnedOrThrow(UUID subjectId, UUID userId) {
         return toResponseDto(subjectCareerAccessService.getOwnedSubjectOrThrow(userId, subjectId));
     }
@@ -68,6 +119,36 @@ public class SubjectService implements SubjectApi {
         requireSubjectId(subjectId);
         requireUserId(userId);
         return subjectCareerAccessService.userOwnsSubject(userId, subjectId);
+    }
+
+    public SubjectAvailabilityResponseDto getAvailability(UUID subjectId, UUID userId) {
+        requireSubjectId(subjectId);
+        requireUserId(userId);
+
+        Subject subject = subjectCareerAccessService.getOwnedSubjectOrThrow(userId, subjectId);
+        Map<UUID, Subject> subjectsById = mapSubjectsById(subject.getCareerId());
+        return toAvailabilityDto(subject, subjectsById, null, null);
+    }
+
+    public List<SubjectResponseDto> listUnlockedByStatusChange(UUID subjectId, UUID userId, String rawNewStatus) {
+        requireSubjectId(subjectId);
+        requireUserId(userId);
+        String normalizedNewStatus = SubjectStatus.normalize(rawNewStatus);
+
+        Subject changedSubject = subjectCareerAccessService.getOwnedSubjectOrThrow(userId, subjectId);
+        List<Subject> careerSubjects = subjectRepository.findByCareerId(changedSubject.getCareerId());
+        Map<UUID, Subject> subjectsById = toSubjectMap(careerSubjects);
+
+        return careerSubjects.stream()
+                .filter(candidate -> !candidate.getId().equals(subjectId))
+                .filter(candidate -> toCorrelativeList(candidate.getCorrelatives()).contains(subjectId))
+                .filter(candidate -> {
+                    boolean blockedBefore = isBlocked(candidate, subjectsById, null, null);
+                    boolean blockedAfter = isBlocked(candidate, subjectsById, subjectId, normalizedNewStatus);
+                    return blockedBefore && !blockedAfter;
+                })
+                .map(this::toResponseDto)
+                .toList();
     }
 
     @Override
@@ -281,6 +362,105 @@ public class SubjectService implements SubjectApi {
         }
 
         return normalized;
+    }
+
+    private int countByStatus(List<Subject> subjects, SubjectStatus status) {
+        return (int) subjects.stream()
+                .map(Subject::getStatus)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(rawStatus -> status.getValue().equalsIgnoreCase(rawStatus))
+                .count();
+    }
+
+    private int sumMetric(List<Subject> subjects, Function<Subject, Integer> extractor) {
+        return subjects.stream()
+                .map(extractor)
+                .filter(Objects::nonNull)
+                .mapToInt(Integer::intValue)
+                .sum();
+    }
+
+    private int sumApprovedMetric(List<Subject> subjects, Function<Subject, Integer> extractor) {
+        return subjects.stream()
+                .filter(subject -> isApprovedStatus(subject.getStatus()))
+                .map(extractor)
+                .filter(Objects::nonNull)
+                .mapToInt(Integer::intValue)
+                .sum();
+    }
+
+    private double calculatePercentage(int numerator, int denominator) {
+        if (denominator <= 0) {
+            return 0.0;
+        }
+        double rawPercentage = (numerator * 100.0) / denominator;
+        return Math.round(rawPercentage * 100.0) / 100.0;
+    }
+
+    private Map<UUID, Subject> toSubjectMap(List<Subject> subjects) {
+        return subjects.stream()
+                .collect(Collectors.toMap(Subject::getId, subject -> subject, (left, right) -> left));
+    }
+
+    private Map<UUID, Subject> mapSubjectsById(UUID careerId) {
+        return toSubjectMap(subjectRepository.findByCareerId(careerId));
+    }
+
+    private SubjectAvailabilityResponseDto toAvailabilityDto(
+            Subject subject,
+            Map<UUID, Subject> subjectsById,
+            UUID overrideSubjectId,
+            String overrideStatus) {
+        List<UUID> correlatives = toCorrelativeList(subject.getCorrelatives());
+        List<UUID> missingCorrelatives = correlatives.stream()
+                .filter(correlativeId -> !isCorrelativeApproved(
+                        correlativeId,
+                        subjectsById,
+                        overrideSubjectId,
+                        overrideStatus))
+                .toList();
+
+        SubjectAvailabilityResponseDto dto = new SubjectAvailabilityResponseDto();
+        dto.setSubjectId(subject.getId());
+        dto.setCorrelatives(correlatives);
+        dto.setMissingCorrelatives(missingCorrelatives);
+        dto.setBlocked(!missingCorrelatives.isEmpty());
+        dto.setAvailable(missingCorrelatives.isEmpty());
+        return dto;
+    }
+
+    private boolean isBlocked(
+            Subject subject,
+            Map<UUID, Subject> subjectsById,
+            UUID overrideSubjectId,
+            String overrideStatus) {
+        return toCorrelativeList(subject.getCorrelatives()).stream()
+                .anyMatch(correlativeId -> !isCorrelativeApproved(
+                        correlativeId,
+                        subjectsById,
+                        overrideSubjectId,
+                        overrideStatus));
+    }
+
+    private boolean isCorrelativeApproved(
+            UUID correlativeId,
+            Map<UUID, Subject> subjectsById,
+            UUID overrideSubjectId,
+            String overrideStatus) {
+        if (overrideSubjectId != null && overrideSubjectId.equals(correlativeId)) {
+            return isApprovedStatus(overrideStatus);
+        }
+
+        Subject correlative = subjectsById.get(correlativeId);
+        return correlative != null && isApprovedStatus(correlative.getStatus());
+    }
+
+    private boolean isApprovedStatus(String status) {
+        if (status == null || status.isBlank()) {
+            return false;
+        }
+        return SubjectStatus.APROBADA.getValue().equalsIgnoreCase(status.trim());
     }
 
     private String[] toCorrelativeArray(List<UUID> correlatives) {
