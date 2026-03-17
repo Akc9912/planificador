@@ -4,9 +4,15 @@
 
 Completar el modulo final de soporte y dejar el backend listo para operar con mejores niveles de performance, seguridad, observabilidad y documentacion.
 
+## Estado de alcance
+
+Esta fase queda fuera del alcance de la Iteracion 01 por decision de cierre del MVP core en Fase 2.
+
+Se mantiene documentada como backlog de entrada para una iteracion posterior.
+
 ## Estado actual segun el plan
 
-Esta fase sigue pendiente. Parte de la base tecnica ya existe, como Swagger y seguridad modular, pero todavia faltan optimizaciones, monitoreo y documentacion de salida a produccion.
+Esta fase queda diferida a una iteracion futura. Parte de la base tecnica ya existe, como Swagger y seguridad modular, pero todavia faltan optimizaciones, monitoreo y documentacion de salida a produccion.
 
 ## Estado real auditado del repo - 17/03/2026
 

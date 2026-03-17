@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Convertir el plan de migracion actual en una iteracion documental operativa, con fases y tareas ejecutables por cualquier colaborador nuevo sin depender de contexto oral.
+Cerrar el MVP backend modular requerido en esta etapa (Fase 1 y Fase 2), dejando Fase 3 y Fase 4 como backlog para iteraciones futuras.
 
 ## Fuentes base
 
@@ -11,12 +11,12 @@ Convertir el plan de migracion actual en una iteracion documental operativa, con
 
 ## Alcance de esta iteracion
 
-Esta iteracion cubre el backend MVP modular completo definido en el plan actual:
+Esta iteracion queda cerrada con alcance MVP core:
 
 - Fase 1: setup y configuracion modular.
 - Fase 2: modulos core del MVP.
-- Fase 3: modulos complementarios y auditoria.
-- Fase 4: soporte, endurecimiento y preparacion para produccion.
+- Fase 3: modulos complementarios y auditoria (diferida a iteracion futura).
+- Fase 4: soporte, endurecimiento y preparacion para produccion (diferida a iteracion futura).
 
 ## Regla de normalizacion de numeracion
 
@@ -25,28 +25,26 @@ El plan fuente mezcla secciones numeradas y bloques operativos sin numeracion un
 ## Estado de fases
 
 - [x] [Fase 1 - Setup y configuracion modular](./fase-1-setup-y-configuracion-modular/README.md) - Cerrada: tareas 1.1 a 1.7 con build en verde, suite minima de 50 pruebas y documentacion alineada al backend real.
-- [ ] [Fase 2 - MVP - Modulos core](./fase-2-mvp-modulos-core/README.md) - Avance real medio: Auth resuelto, Career muy avanzado, Subject parcial inicial, Equivalence y logica critica pendientes.
-- [ ] [Fase 3 - Modulos complementarios y auditoria](./fase-3-modulos-complementarios-y-auditoria/README.md) - Aun no migrada; Event y Reminder siguen desacoplados via `410 GONE` en legacy.
-- [ ] [Fase 4 - Soporte y produccion](./fase-4-soporte-y-produccion/README.md) - Aun no iniciada como fase; Swagger y base de seguridad ya existen, pero soporte, observabilidad y optimizacion siguen pendientes.
+- [x] [Fase 2 - MVP - Modulos core](./fase-2-mvp-modulos-core/README.md) - Cerrada: tareas 2.1 a 2.9 completadas con evidencia tecnica y pruebas modulares en verde.
+- [ ] [Fase 3 - Modulos complementarios y auditoria](./fase-3-modulos-complementarios-y-auditoria/README.md) - Diferida por alcance: pasa a iteracion futura, fuera del MVP requerido.
+- [ ] [Fase 4 - Soporte y produccion](./fase-4-soporte-y-produccion/README.md) - Diferida por alcance: pasa a iteracion futura, fuera del MVP requerido.
 
 ## Desglose por fase
 
 - Fase 1 - Tareas 1.1 a 1.7 - [README de fase](./fase-1-setup-y-configuracion-modular/README.md)
 - Fase 2 - Tareas 2.1 a 2.9 - [README de fase](./fase-2-mvp-modulos-core/README.md)
-- Fase 3 - Tareas 3.1 a 3.5 - [README de fase](./fase-3-modulos-complementarios-y-auditoria/README.md)
-- Fase 4 - Tareas 4.1 a 4.5 - [README de fase](./fase-4-soporte-y-produccion/README.md)
+- Fase 3 - Tareas 3.1 a 3.5 - [README de fase](./fase-3-modulos-complementarios-y-auditoria/README.md) (backlog para iteracion futura)
+- Fase 4 - Tareas 4.1 a 4.5 - [README de fase](./fase-4-soporte-y-produccion/README.md) (backlog para iteracion futura)
 
 ## Estado real auditado del repo - 17/03/2026
 
 - `./mvnw -q -DskipTests compile` compila en verde.
-- No se detectan errores activos en `src` desde el analizador del editor.
-- La suite modular actual registrada en `target/surefire-reports` esta en verde: 2 pruebas de arquitectura, 22 de auth y 26 de career, todas sin errores ni fallos.
-- Fase 1 queda formalmente cerrada con ese baseline de build y testing.
-- Los modulos presentes hoy en `src/main/java/aktech/planificador/modules` son `auth`, `career`, `subject` y `equivalence`.
-- `subject` solo tiene hoy una base inicial (`SubjectCareerAccessService` y `CareerEventListener`).
-- No hay implementacion efectiva aun en `src/main/java/aktech/planificador/modules/equivalence`.
-- Event y Reminder siguen fuera del MVP modular y sus controladores legacy devuelven `410 GONE`.
+- Fase 1 y Fase 2 quedan cerradas para el alcance MVP actual.
+- Los modulos core presentes en `src/main/java/aktech/planificador/modules` son `auth`, `career`, `subject` y `equivalence`.
+- `subject` y `equivalence` quedan implementados en esquema UUID con reglas de negocio y endpoints del MVP.
+- Event y Reminder siguen fuera del MVP modular y sus implementaciones legacy fueron eliminadas del repo para ser reimplementadas desde cero en una iteracion futura.
 - Swagger/OpenAPI ya esta configurado con `springdoc-openapi-starter-webmvc-ui` y `OpenApiConfig`.
+- Fase 3 y Fase 4 quedan explicitamente diferidas a iteraciones futuras por decision de alcance.
 
 ## Reglas operativas de ejecucion
 
@@ -74,12 +72,12 @@ El plan fuente mezcla secciones numeradas y bloques operativos sin numeracion un
 - [x] Existe README por fase con links a tareas.
 - [x] Existe un archivo md por cada tarea planificada en esta iteracion documental.
 - [x] Existe un corte de estado real del repo incorporado a la iteracion.
-- [ ] Todas las tareas estan cerradas con evidencia tecnica.
-- [ ] Todas las fases tienen build y pruebas en verde al cierre.
+- [x] Todas las tareas del alcance MVP (Fase 1 y Fase 2) estan cerradas con evidencia tecnica.
+- [x] El corte de alcance deja Fase 3 y Fase 4 como backlog para nuevas iteraciones.
 - [x] La documentacion refleja el estado real del backend luego de cada cierre.
 
 ## Siguiente frente tecnico
 
-1. Verificar si queda algun borde menor de Career como modulo plantilla definitiva.
-2. Despejado eso, abrir Subject dentro de Fase 2.
-3. Dejar Equivalence para despues de Subject, sin reabrir definiciones base de Fase 1.
+1. Abrir la siguiente iteracion con Fase 3 (Event, Reminder, UserSettings y Audit) como nuevo alcance.
+2. Planificar Fase 4 (soporte y produccion) en una iteracion posterior al cierre de Fase 3.
+3. Mantener la regla de no mezclar codigo nuevo con legacy en cada nueva migracion modular.
