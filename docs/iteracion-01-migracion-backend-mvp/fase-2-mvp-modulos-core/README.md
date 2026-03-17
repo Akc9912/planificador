@@ -12,9 +12,9 @@ Career y Auth ya tienen avance real. Career queda cerrado en la tarea 2.1, Subje
 
 - `modules/career` queda cerrado como modulo plantilla del MVP: ownership por token, contrato compartido (`CareerApi`), evento de dominio (`CareerDeletedEvent`) y pruebas de servicio/controlador en verde.
 - `modules/subject` queda implementado en UUID sobre `subjects`, `subject_modules` y `subject_schedules`, con CRUD modular, ownership via `CareerApi`, cleanup por evento, reglas de correlativas cerradas en 2.5 y calculo de progreso academico cerrado en 2.6.
-- `modules/equivalence` queda implementado en UUID con CRUD, validacion de circularidad, validacion de duplicados directos/inversos y dependencias a Subject via `SubjectApi`/`SubjectBasicDto`.
+- `modules/equivalence` queda implementado en UUID con CRUD y validaciones de negocio activas (circularidad, carreras distintas y duplicados directos/inversos) por contratos compartidos de Subject.
 - `modules/auth` queda cerrado en 2.4 con contrato modular documentado (`/auth/me`, `/auth/token/validate`) y delegacion a Supabase en `410 GONE` para credenciales.
-- No aparece evidencia actual de cierre para validaciones de negocio integrales, dashboard y busqueda avanzada.
+- No aparece evidencia actual de cierre para dashboard y busqueda avanzada.
 
 ## Nota de numeracion
 
@@ -28,7 +28,7 @@ Esta fase mezcla modulos prioritarios y bloques de logica critica en el plan ori
 - [x] [2.4 Implementar Auth Module](./2.4.md) - Cerrada: contrato auth modular documentado y suite auth/seguridad validada (`29 tests`, `0 failures`).
 - [x] [2.5 Validacion de Correlativas](./2.5.md) - Cerrada: reglas de bloqueo/habilitacion implementadas en SubjectService y validadas con 23 tests en verde.
 - [x] [2.6 Calculo de Progreso](./2.6.md) - Cerrada: DTO + endpoint de progreso por carrera en Subject con metricas y 26 tests en verde.
-- [ ] [2.7 Validaciones de Negocio](./2.7.md) - Parcial bajo: existen validaciones puntuales, pero no una cobertura cerrada para Subject y Equivalence.
+- [x] [2.7 Validaciones de Negocio](./2.7.md) - Cerrada: reglas de transicion en Subject + validaciones de Equivalence consolidadas con 48 tests en verde.
 - [ ] [2.8 Busqueda y Filtros](./2.8.md) - Pendiente.
 - [ ] [2.9 Endpoints de Dashboard](./2.9.md) - Pendiente.
 
@@ -40,7 +40,7 @@ Esta fase mezcla modulos prioritarios y bloques de logica critica en el plan ori
 - [x] 2.4 Auth queda estable y documentado para handoff de contrato.
 - [x] 2.5 Correlativas calculan bloqueos y habilitaciones.
 - [x] 2.6 Progreso y estadisticas se recalculan correctamente.
-- [ ] 2.7 Reglas de dominio quedan en servicios y con pruebas.
+- [x] 2.7 Reglas de dominio quedan en servicios y con pruebas.
 - [ ] 2.8 Hay busqueda, filtros y ordenamientos minimos.
 - [ ] 2.9 El backend expone datos utiles para dashboard.
 

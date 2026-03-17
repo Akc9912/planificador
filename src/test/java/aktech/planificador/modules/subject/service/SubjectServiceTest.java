@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +29,7 @@ import aktech.planificador.modules.subject.dto.SubjectUpdateRequestDto;
 import aktech.planificador.modules.subject.model.Subject;
 import aktech.planificador.modules.subject.repository.SubjectRepository;
 import aktech.planificador.shared.event.SubjectStatusChangedEvent;
+import aktech.planificador.shared.exception.BusinessException;
 
 @ExtendWith(MockitoExtension.class)
 class SubjectServiceTest {
@@ -92,6 +94,7 @@ class SubjectServiceTest {
 
         Subject existing = createSubject(subjectId, careerId, "Historia", "pendiente");
         when(subjectCareerAccessService.getOwnedSubjectOrThrow(userId, subjectId)).thenReturn(existing);
+        when(subjectRepository.findByCareerId(careerId)).thenReturn(List.of(existing));
         when(subjectRepository.save(any(Subject.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         SubjectUpdateRequestDto request = new SubjectUpdateRequestDto();
@@ -112,6 +115,130 @@ class SubjectServiceTest {
         assertEquals(careerId, event.getCareerId());
         assertEquals("pendiente", event.getOldStatus());
         assertEquals("cursando", event.getNewStatus());
+    }
+
+    @Test
+    void createSubject_shouldThrowWhenInitialStatusIsInProgressAndCorrelativesArePending() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+        UUID pendingCorrelativeId = UUID.randomUUID();
+
+        SubjectCreateRequestDto request = new SubjectCreateRequestDto();
+        request.setCareerId(careerId);
+        request.setName("Analisis II");
+        request.setStatus("cursando");
+        request.setCorrelatives(List.of(pendingCorrelativeId));
+
+        Subject pendingCorrelative = createSubject(pendingCorrelativeId, careerId, "Analisis I", "pendiente");
+        when(subjectRepository.findByCareerId(careerId)).thenReturn(List.of(pendingCorrelative));
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> subjectService.createSubject(userId, request));
+
+        verify(subjectCareerAccessService).validateCareerOwnership(userId, careerId);
+        verify(subjectRepository, never()).save(any(Subject.class));
+        assertEquals("La materia esta bloqueada por correlativas pendientes y no puede pasar a cursando",
+                ex.getMessage());
+    }
+
+    @Test
+    void updateSubject_shouldThrowWhenMovingToInProgressAndCorrelativesArePending() {
+        UUID userId = UUID.randomUUID();
+        UUID subjectId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+        UUID pendingCorrelativeId = UUID.randomUUID();
+
+        Subject subject = createSubject(subjectId, careerId, "Fisica II", "pendiente");
+        subject.setCorrelatives(new String[] { pendingCorrelativeId.toString() });
+        Subject pendingCorrelative = createSubject(pendingCorrelativeId, careerId, "Fisica I", "cursando");
+
+        when(subjectCareerAccessService.getOwnedSubjectOrThrow(userId, subjectId)).thenReturn(subject);
+        when(subjectRepository.findByCareerId(careerId)).thenReturn(List.of(subject, pendingCorrelative));
+
+        SubjectUpdateRequestDto request = new SubjectUpdateRequestDto();
+        request.setStatus("cursando");
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> subjectService.updateSubject(subjectId, userId, request));
+
+        verify(subjectRepository, never()).save(any(Subject.class));
+        assertEquals("La materia esta bloqueada por correlativas pendientes y no puede pasar a cursando",
+                ex.getMessage());
+    }
+
+    @Test
+    void updateSubject_shouldThrowWhenApprovingAndCorrelativesArePending() {
+        UUID userId = UUID.randomUUID();
+        UUID subjectId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+        UUID pendingCorrelativeId = UUID.randomUUID();
+
+        Subject subject = createSubject(subjectId, careerId, "Fisica II", "regular");
+        subject.setCorrelatives(new String[] { pendingCorrelativeId.toString() });
+        Subject pendingCorrelative = createSubject(pendingCorrelativeId, careerId, "Fisica I", "cursando");
+
+        when(subjectCareerAccessService.getOwnedSubjectOrThrow(userId, subjectId)).thenReturn(subject);
+        when(subjectRepository.findByCareerId(careerId)).thenReturn(List.of(subject, pendingCorrelative));
+
+        SubjectUpdateRequestDto request = new SubjectUpdateRequestDto();
+        request.setStatus("aprobada");
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> subjectService.updateSubject(subjectId, userId, request));
+
+        verify(subjectRepository, never()).save(any(Subject.class));
+        assertEquals("No se puede aprobar una materia con correlativas pendientes", ex.getMessage());
+    }
+
+    @Test
+    void updateSubject_shouldAllowMovingToInProgressWhenCorrelativesAreApproved() {
+        UUID userId = UUID.randomUUID();
+        UUID subjectId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+        UUID approvedCorrelativeId = UUID.randomUUID();
+
+        Subject subject = createSubject(subjectId, careerId, "Fisica II", "pendiente");
+        subject.setCorrelatives(new String[] { approvedCorrelativeId.toString() });
+        Subject approvedCorrelative = createSubject(approvedCorrelativeId, careerId, "Fisica I", "aprobada");
+
+        when(subjectCareerAccessService.getOwnedSubjectOrThrow(userId, subjectId)).thenReturn(subject);
+        when(subjectRepository.findByCareerId(careerId)).thenReturn(List.of(subject, approvedCorrelative));
+        when(subjectRepository.save(any(Subject.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        SubjectUpdateRequestDto request = new SubjectUpdateRequestDto();
+        request.setStatus("cursando");
+
+        SubjectResponseDto response = subjectService.updateSubject(subjectId, userId, request);
+
+        assertEquals("cursando", response.getStatus());
+        verify(subjectRepository).save(any(Subject.class));
+    }
+
+    @Test
+    void updateSubject_shouldAllowApprovingWhenCorrelativesAreResolved() {
+        UUID userId = UUID.randomUUID();
+        UUID subjectId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+        UUID approvedCorrelativeId = UUID.randomUUID();
+
+        Subject subject = createSubject(subjectId, careerId, "Quimica II", "regular");
+        subject.setCorrelatives(new String[] { approvedCorrelativeId.toString() });
+        Subject approvedCorrelative = createSubject(approvedCorrelativeId, careerId, "Quimica I", "aprobada");
+
+        when(subjectCareerAccessService.getOwnedSubjectOrThrow(userId, subjectId)).thenReturn(subject);
+        when(subjectRepository.findByCareerId(careerId)).thenReturn(List.of(subject, approvedCorrelative));
+        when(subjectRepository.save(any(Subject.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        SubjectUpdateRequestDto request = new SubjectUpdateRequestDto();
+        request.setStatus("aprobada");
+
+        SubjectResponseDto response = subjectService.updateSubject(subjectId, userId, request);
+
+        assertEquals("aprobada", response.getStatus());
+        verify(subjectRepository).save(any(Subject.class));
     }
 
     @Test

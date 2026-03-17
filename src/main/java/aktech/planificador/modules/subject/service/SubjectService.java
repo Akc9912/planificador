@@ -26,6 +26,7 @@ import aktech.planificador.modules.subject.repository.SubjectRepository;
 import aktech.planificador.shared.api.SubjectApi;
 import aktech.planificador.shared.dto.SubjectBasicDto;
 import aktech.planificador.shared.event.SubjectStatusChangedEvent;
+import aktech.planificador.shared.exception.BusinessException;
 import aktech.planificador.shared.exception.NotFoundException;
 import aktech.planificador.shared.util.ValidationUtils;
 
@@ -174,14 +175,18 @@ public class SubjectService implements SubjectApi {
 
         subjectCareerAccessService.validateCareerOwnership(userId, request.getCareerId());
 
+        String normalizedStatus = normalizeStatusOrDefault(request.getStatus());
+        String[] correlatives = toCorrelativeArray(request.getCorrelatives());
+        validateCorrelativeRulesForStatus(request.getCareerId(), correlatives, normalizedStatus);
+
         Subject subject = new Subject();
         subject.setCareerId(request.getCareerId());
         subject.setName(validateRequiredText(request.getName(), "nombre", MAX_TEXT_LENGTH));
         subject.setCode(validateOptionalText(request.getCode(), "codigo", MAX_CODE_LENGTH));
-        subject.setStatus(normalizeStatusOrDefault(request.getStatus()));
+        subject.setStatus(normalizedStatus);
         subject.setGrade(validateIntegerGrade(request.getGrade(), "nota"));
         subject.setApprovalMethod(SubjectApprovalMethod.normalize(request.getApprovalMethod()));
-        subject.setCorrelatives(toCorrelativeArray(request.getCorrelatives()));
+        subject.setCorrelatives(correlatives);
         subject.setYear(validateNonNegativeInteger(request.getYear(), "anio"));
         subject.setSemester(validateNonNegativeInteger(request.getSemester(), "semestre"));
         subject.setEntranceCourse(Boolean.TRUE.equals(request.getEntranceCourse()));
@@ -203,6 +208,16 @@ public class SubjectService implements SubjectApi {
         Subject subject = subjectCareerAccessService.getOwnedSubjectOrThrow(userId, subjectId);
         String oldStatus = subject.getStatus();
 
+        String requestedStatus = request.getStatus() != null ? SubjectStatus.normalize(request.getStatus()) : null;
+        String effectiveStatus = requestedStatus != null ? requestedStatus : subject.getStatus();
+        String[] effectiveCorrelatives = request.getCorrelatives() != null
+                ? toCorrelativeArray(request.getCorrelatives())
+                : subject.getCorrelatives();
+
+        if (request.getStatus() != null || request.getCorrelatives() != null) {
+            validateCorrelativeRulesForStatus(subject.getCareerId(), effectiveCorrelatives, effectiveStatus);
+        }
+
         if (request.getName() != null) {
             subject.setName(validateRequiredText(request.getName(), "nombre", MAX_TEXT_LENGTH));
         }
@@ -211,8 +226,8 @@ public class SubjectService implements SubjectApi {
             subject.setCode(validateOptionalText(request.getCode(), "codigo", MAX_CODE_LENGTH));
         }
 
-        if (request.getStatus() != null) {
-            subject.setStatus(SubjectStatus.normalize(request.getStatus()));
+        if (requestedStatus != null) {
+            subject.setStatus(requestedStatus);
         }
 
         if (request.getGrade() != null) {
@@ -224,7 +239,7 @@ public class SubjectService implements SubjectApi {
         }
 
         if (request.getCorrelatives() != null) {
-            subject.setCorrelatives(toCorrelativeArray(request.getCorrelatives()));
+            subject.setCorrelatives(effectiveCorrelatives);
         }
 
         if (request.getYear() != null) {
@@ -362,6 +377,39 @@ public class SubjectService implements SubjectApi {
         }
 
         return normalized;
+    }
+
+    private void validateCorrelativeRulesForStatus(UUID careerId, String[] correlatives, String normalizedStatus) {
+        if (!requiresResolvedCorrelatives(normalizedStatus)) {
+            return;
+        }
+
+        Subject subjectToValidate = new Subject();
+        subjectToValidate.setCorrelatives(correlatives);
+
+        boolean blocked = isBlocked(subjectToValidate, mapSubjectsById(careerId), null, null);
+        if (!blocked) {
+            return;
+        }
+
+        if (SubjectStatus.CURSANDO.getValue().equalsIgnoreCase(normalizedStatus)) {
+            throw new BusinessException(
+                    "La materia esta bloqueada por correlativas pendientes y no puede pasar a cursando");
+        }
+
+        if (SubjectStatus.APROBADA.getValue().equalsIgnoreCase(normalizedStatus)) {
+            throw new BusinessException("No se puede aprobar una materia con correlativas pendientes");
+        }
+    }
+
+    private boolean requiresResolvedCorrelatives(String normalizedStatus) {
+        if (normalizedStatus == null || normalizedStatus.isBlank()) {
+            return false;
+        }
+
+        String status = normalizedStatus.trim();
+        return SubjectStatus.CURSANDO.getValue().equalsIgnoreCase(status)
+                || SubjectStatus.APROBADA.getValue().equalsIgnoreCase(status);
     }
 
     private int countByStatus(List<Subject> subjects, SubjectStatus status) {

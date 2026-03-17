@@ -190,6 +190,32 @@ class EquivalenceServiceTest {
     }
 
     @Test
+    void updateEquivalence_shouldThrowWhenCircularAfterUpdate() {
+        UUID userId = UUID.randomUUID();
+        UUID equivalenceId = UUID.randomUUID();
+        UUID subjectAId = UUID.randomUUID();
+        UUID subjectBId = UUID.randomUUID();
+
+        Equivalence existing = new Equivalence();
+        existing.setId(equivalenceId);
+        existing.setUserId(userId);
+        existing.setType("total");
+        existing.setSubjectAId(subjectAId);
+        existing.setSubjectBId(subjectBId);
+
+        when(equivalenceRepository.findByIdAndUserId(equivalenceId, userId)).thenReturn(Optional.of(existing));
+
+        EquivalenceUpdateRequestDto request = new EquivalenceUpdateRequestDto();
+        request.setSubjectBId(subjectAId);
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> equivalenceService.updateEquivalence(equivalenceId, userId, request));
+
+        assertEquals("Una materia no puede ser equivalente a si misma", ex.getMessage());
+    }
+
+    @Test
     void listBySubject_shouldThrowWhenUserDoesNotOwnSubject() {
         UUID userId = UUID.randomUUID();
         UUID subjectId = UUID.randomUUID();
