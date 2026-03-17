@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import aktech.planificador.modules.subject.dto.CareerProgressResponseDto;
+import aktech.planificador.modules.subject.dto.CareerDashboardResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectAvailabilityResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectCreateRequestDto;
 import aktech.planificador.modules.subject.dto.SubjectResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectUpdateRequestDto;
+import aktech.planificador.modules.subject.service.SubjectDashboardService;
 import aktech.planificador.modules.subject.service.SubjectService;
 import aktech.planificador.shared.exception.BusinessException;
 
@@ -28,9 +30,11 @@ import aktech.planificador.shared.exception.BusinessException;
 public class SubjectController {
 
     private final SubjectService subjectService;
+    private final SubjectDashboardService subjectDashboardService;
 
-    public SubjectController(SubjectService subjectService) {
+    public SubjectController(SubjectService subjectService, SubjectDashboardService subjectDashboardService) {
         this.subjectService = subjectService;
+        this.subjectDashboardService = subjectDashboardService;
     }
 
     @PostMapping
@@ -80,6 +84,12 @@ public class SubjectController {
     public CareerProgressResponseDto getCareerProgress(@PathVariable UUID careerId) {
         UUID userId = getAuthenticatedUserId();
         return subjectService.getCareerProgress(userId, careerId);
+    }
+
+    @GetMapping("/career/{careerId}/dashboard")
+    public CareerDashboardResponseDto getCareerDashboard(@PathVariable UUID careerId) {
+        UUID userId = getAuthenticatedUserId();
+        return subjectDashboardService.getCareerDashboard(userId, careerId);
     }
 
     @GetMapping("/{id}")

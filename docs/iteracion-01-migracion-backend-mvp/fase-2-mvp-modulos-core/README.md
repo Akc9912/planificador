@@ -11,10 +11,10 @@ Career y Auth ya tienen avance real. Career queda cerrado en la tarea 2.1, Subje
 ## Estado real auditado del repo - 17/03/2026
 
 - `modules/career` queda cerrado como modulo plantilla del MVP: ownership por token, contrato compartido (`CareerApi`), evento de dominio (`CareerDeletedEvent`) y pruebas de servicio/controlador en verde.
-- `modules/subject` queda implementado en UUID sobre `subjects`, `subject_modules` y `subject_schedules`, con CRUD modular, ownership via `CareerApi`, reglas de correlativas (2.5), progreso academico (2.6), validaciones de dominio (2.7) y busqueda/filtros minimos con orden (2.8).
+- `modules/subject` queda implementado en UUID sobre `subjects`, `subject_modules` y `subject_schedules`, con CRUD modular, ownership via `CareerApi`, reglas de correlativas (2.5), progreso academico (2.6), validaciones de dominio (2.7), busqueda/filtros (2.8) y endpoint agregador de dashboard (2.9).
 - `modules/equivalence` queda implementado en UUID con CRUD y validaciones de negocio activas (circularidad, carreras distintas y duplicados directos/inversos) por contratos compartidos de Subject.
 - `modules/auth` queda cerrado en 2.4 con contrato modular documentado (`/auth/me`, `/auth/token/validate`) y delegacion a Supabase en `410 GONE` para credenciales.
-- No aparece evidencia actual de cierre para dashboard.
+- Fase 2 queda sin pendientes tecnicos en modulos core priorizados del MVP.
 
 ## Nota de numeracion
 
@@ -30,7 +30,7 @@ Esta fase mezcla modulos prioritarios y bloques de logica critica en el plan ori
 - [x] [2.6 Calculo de Progreso](./2.6.md) - Cerrada: DTO + endpoint de progreso por carrera en Subject con metricas y 26 tests en verde.
 - [x] [2.7 Validaciones de Negocio](./2.7.md) - Cerrada: reglas de transicion en Subject + validaciones de Equivalence consolidadas con 48 tests en verde.
 - [x] [2.8 Busqueda y Filtros](./2.8.md) - Cerrada: endpoint de busqueda por carrera con filtros (nombre, codigo, estado, anio, semestre) y orden validado, con 36 tests en verde.
-- [ ] [2.9 Endpoints de Dashboard](./2.9.md) - Pendiente.
+- [x] [2.9 Endpoints de Dashboard](./2.9.md) - Cerrada: endpoint agregador por carrera con recomendaciones, materias activas, progreso reutilizado y alertas, validado con 39 tests en verde.
 
 ## Checklist de avance
 
@@ -42,7 +42,7 @@ Esta fase mezcla modulos prioritarios y bloques de logica critica en el plan ori
 - [x] 2.6 Progreso y estadisticas se recalculan correctamente.
 - [x] 2.7 Reglas de dominio quedan en servicios y con pruebas.
 - [x] 2.8 Hay busqueda, filtros y ordenamientos minimos.
-- [ ] 2.9 El backend expone datos utiles para dashboard.
+- [x] 2.9 El backend expone datos utiles para dashboard.
 
 ## Criterio de salida de la fase
 

@@ -19,10 +19,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import aktech.planificador.modules.subject.dto.CareerProgressResponseDto;
+import aktech.planificador.modules.subject.dto.CareerDashboardResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectAvailabilityResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectCreateRequestDto;
 import aktech.planificador.modules.subject.dto.SubjectResponseDto;
 import aktech.planificador.modules.subject.dto.SubjectUpdateRequestDto;
+import aktech.planificador.modules.subject.service.SubjectDashboardService;
 import aktech.planificador.modules.subject.service.SubjectService;
 import aktech.planificador.shared.exception.BusinessException;
 
@@ -32,11 +34,14 @@ class SubjectControllerTest {
     @Mock
     private SubjectService subjectService;
 
+    @Mock
+    private SubjectDashboardService subjectDashboardService;
+
     private SubjectController subjectController;
 
     @BeforeEach
     void setUp() {
-        subjectController = new SubjectController(subjectService);
+        subjectController = new SubjectController(subjectService, subjectDashboardService);
         SecurityContextHolder.clearContext();
     }
 
@@ -133,6 +138,24 @@ class SubjectControllerTest {
 
         assertSame(expected, response);
         verify(subjectService).getCareerProgress(userId, careerId);
+    }
+
+    @Test
+    void getCareerDashboard_shouldDelegateUsingAuthenticatedUser() {
+        UUID userId = UUID.randomUUID();
+        UUID careerId = UUID.randomUUID();
+        setAuthenticatedUser(userId.toString());
+
+        CareerDashboardResponseDto expected = new CareerDashboardResponseDto();
+        expected.setCareerId(careerId);
+        expected.setActiveSubjects(2);
+
+        when(subjectDashboardService.getCareerDashboard(userId, careerId)).thenReturn(expected);
+
+        CareerDashboardResponseDto response = subjectController.getCareerDashboard(careerId);
+
+        assertSame(expected, response);
+        verify(subjectDashboardService).getCareerDashboard(userId, careerId);
     }
 
     @Test
