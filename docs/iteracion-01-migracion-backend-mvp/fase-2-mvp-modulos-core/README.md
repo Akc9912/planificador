@@ -13,7 +13,7 @@ Career y Auth ya tienen avance real. Career queda cerrado en la tarea 2.1, Subje
 - `modules/career` queda cerrado como modulo plantilla del MVP: ownership por token, contrato compartido (`CareerApi`), evento de dominio (`CareerDeletedEvent`) y pruebas de servicio/controlador en verde.
 - `modules/subject` queda implementado en UUID sobre `subjects`, `subject_modules` y `subject_schedules`, con CRUD modular, ownership via `CareerApi`, cleanup por evento y suite propia en verde.
 - `modules/equivalence` queda implementado en UUID con CRUD, validacion de circularidad, validacion de duplicados directos/inversos y dependencias a Subject via `SubjectApi`/`SubjectBasicDto`.
-- `modules/auth` existe con controlador, servicio, filtro JWT y pruebas propias en verde.
+- `modules/auth` queda cerrado en 2.4 con contrato modular documentado (`/auth/me`, `/auth/token/validate`) y delegacion a Supabase en `410 GONE` para credenciales.
 - No aparece evidencia actual de progreso cerrado para correlativas, dashboard y busqueda avanzada.
 
 ## Nota de numeracion
@@ -25,7 +25,7 @@ Esta fase mezcla modulos prioritarios y bloques de logica critica en el plan ori
 - [x] [2.1 Implementar Career Module](./2.1.md) - Cerrada: modulo Career auditado y validado (estructura, ownership, contrato, eventos y pruebas).
 - [x] [2.2 Implementar Subject Module](./2.2.md) - Cerrada: modulo Subject implementado sobre UUID con CRUD, ownership por contrato compartido y pruebas en verde.
 - [x] [2.3 Implementar Equivalence Module](./2.3.md) - Cerrada: modulo Equivalence implementado con reglas de negocio y pruebas propias en verde.
-- [x] [2.4 Implementar Auth Module](./2.4.md)
+- [x] [2.4 Implementar Auth Module](./2.4.md) - Cerrada: contrato auth modular documentado y suite auth/seguridad validada (`29 tests`, `0 failures`).
 - [ ] [2.5 Validacion de Correlativas](./2.5.md) - Pendiente.
 - [ ] [2.6 Calculo de Progreso](./2.6.md) - Pendiente.
 - [ ] [2.7 Validaciones de Negocio](./2.7.md) - Parcial bajo: existen validaciones puntuales, pero no una cobertura cerrada para Subject y Equivalence.
