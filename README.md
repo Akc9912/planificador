@@ -569,22 +569,31 @@ psql -U postgres -d micarrera < humanis_db_init.sql
 
 ### 2. Configurar Variables de Entorno
 
-Crear `.env` o `application.properties`:
+Crear `.env` en la raiz del proyecto (puedes copiar `.env.example`):
 
-```properties
-# Database
-spring.datasource.url=jdbc:postgresql://localhost:5432/micarrera
-spring.datasource.username=tu_usuario
-spring.datasource.password=tu_password
+```env
+# Application
+SERVER_PORT=8081
+
+# JWT used by internal tokens
+PLANNI_JWT_SECRET_KEY=replace_with_a_long_random_secret
+PLANNI_JWT_EXPIRATION_MS=86400000
 
 # Supabase Auth
-supabase.jwt.secret=TU_SUPABASE_JWT_SECRET
-supabase.url=https://tu-proyecto.supabase.co
-supabase.anon.key=TU_ANON_KEY
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_ANON_KEY=replace_with_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=replace_with_supabase_service_role_key
+SUPABASE_JWT_SECRET=replace_with_supabase_jwt_secret
 
-# Server
-server.port=8081
+# Supabase Postgres connection
+PLANNI_DB_HOST=db.your-project-ref.supabase.co
+PLANNI_DB_PORT=5432
+PLANNI_DB_NAME=postgres
+PLANNI_DB_USER=postgres
+PLANNI_DB_PASSWORD=replace_with_db_password
 ```
+
+`application.properties` ya carga este archivo con `spring.config.import=optional:file:.env[.properties]`.
 
 ### 3. Instalar y Ejecutar
 

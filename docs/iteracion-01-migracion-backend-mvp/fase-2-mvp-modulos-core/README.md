@@ -6,13 +6,13 @@ Cerrar los modulos core del MVP y su logica de negocio principal: Career, Subjec
 
 ## Estado actual segun el plan
 
-Career y Auth ya tienen avance real. Subject y Equivalence siguen pendientes como siguiente frente tecnico. La prioridad operativa vigente es cerrar Career por completo antes de abrir Subject y Equivalence.
+Career y Auth ya tienen avance real. Career queda cerrado en la tarea 2.1 y Subject queda implementado/cerrado en 2.2 con evidencia de auditoria y pruebas en verde. Equivalence sigue como siguiente frente tecnico.
 
 ## Estado real auditado del repo - 17/03/2026
 
-- `modules/career` existe con capas reales y pruebas propias en verde (`CareerServiceTest` y `CareerControllerTest`).
+- `modules/career` queda cerrado como modulo plantilla del MVP: ownership por token, contrato compartido (`CareerApi`), evento de dominio (`CareerDeletedEvent`) y pruebas de servicio/controlador en verde.
+- `modules/subject` queda implementado en UUID sobre `subjects`, `subject_modules` y `subject_schedules`, con CRUD modular, ownership via `CareerApi`, cleanup por evento y suite propia en verde.
 - `modules/auth` existe con controlador, servicio, filtro JWT y pruebas propias en verde.
-- `modules/subject` solo tiene dos piezas base hoy: `SubjectCareerAccessService` y `CareerEventListener`.
 - No hay archivos implementados aun dentro de `src/main/java/aktech/planificador/modules/equivalence`.
 - No aparece evidencia actual de progreso cerrado para correlativas, dashboard, busqueda avanzada o modulo de equivalencias.
 
@@ -22,8 +22,8 @@ Esta fase mezcla modulos prioritarios y bloques de logica critica en el plan ori
 
 ## Tareas de la fase
 
-- [ ] [2.1 Implementar Career Module](./2.1.md) - Parcial alto: modulo y pruebas presentes; falta tratarlo como completamente cerrado dentro de la iteracion.
-- [ ] [2.2 Implementar Subject Module](./2.2.md) - Parcial inicial: solo existe base de acceso a Career y listener de evento.
+- [x] [2.1 Implementar Career Module](./2.1.md) - Cerrada: modulo Career auditado y validado (estructura, ownership, contrato, eventos y pruebas).
+- [x] [2.2 Implementar Subject Module](./2.2.md) - Cerrada: modulo Subject implementado sobre UUID con CRUD, ownership por contrato compartido y pruebas en verde.
 - [ ] [2.3 Implementar Equivalence Module](./2.3.md) - Pendiente real: el modulo no tiene implementacion efectiva en `src/main/java`.
 - [x] [2.4 Implementar Auth Module](./2.4.md)
 - [ ] [2.5 Validacion de Correlativas](./2.5.md) - Pendiente.
@@ -34,8 +34,8 @@ Esta fase mezcla modulos prioritarios y bloques de logica critica en el plan ori
 
 ## Checklist de avance
 
-- [ ] 2.1 Career queda cerrado como modulo plantilla.
-- [ ] 2.2 Subject entra en UUID y sin imports a legacy.
+- [x] 2.1 Career queda cerrado como modulo plantilla.
+- [x] 2.2 Subject entra en UUID y sin imports a legacy.
 - [ ] 2.3 Equivalence queda acoplado solo por contratos compartidos.
 - [x] 2.4 Auth queda estable y documentado para handoff de contrato.
 - [ ] 2.5 Correlativas calculan bloqueos y habilitaciones.
