@@ -3,6 +3,7 @@
 ## Resumen
 
 Este proyecto sigue **Git Flow** con 3 ambientes:
+
 - **Production**: main
 - **Pre-Production**: staging
 - **Development**: develop
@@ -11,21 +12,21 @@ Este proyecto sigue **Git Flow** con 3 ambientes:
 
 ### Ramas Principales (Long-lived)
 
-| Rama | Propósito | Entorno | Protección | Pull Requests |
-|------|----------|---------|-----------|---------------|
-| `main` | Código en producción | Production | Sí (require review) | Solo release/* y hotfix/* |
-| `staging` | Pre-producción y testing | Pre-Prod | Sí (require review) | Solo release/* e hotfix/* |
-| `develop` | Integración de desarrollo | Development | Sí (require review) | feature/*, bugfix/*, chore/* |
+| Rama      | Propósito                 | Entorno     | Protección          | Pull Requests                 |
+| --------- | ------------------------- | ----------- | ------------------- | ----------------------------- |
+| `main`    | Código en producción      | Production  | Sí (require review) | Solo release/_ y hotfix/_     |
+| `staging` | Pre-producción y testing  | Pre-Prod    | Sí (require review) | Solo release/_ e hotfix/_     |
+| `develop` | Integración de desarrollo | Development | Sí (require review) | feature/_, bugfix/_, chore/\* |
 
 ### Ramas de Trabajo (Short-lived)
 
-| Tipo | Patrón | Origen | Destino | Propósito |
-|------|--------|--------|---------|----------|
-| Feature | `feature/*` | develop | develop | Nuevas funcionalidades o migraciones |
-| Bugfix | `bugfix/*` | develop | develop | Correcciones de bugs no críticos |
-| Chore | `chore/*` | develop | develop | Tareas, actualizaciones, documentación |
+| Tipo    | Patrón      | Origen  | Destino        | Propósito                              |
+| ------- | ----------- | ------- | -------------- | -------------------------------------- |
+| Feature | `feature/*` | develop | develop        | Nuevas funcionalidades o migraciones   |
+| Bugfix  | `bugfix/*`  | develop | develop        | Correcciones de bugs no críticos       |
+| Chore   | `chore/*`   | develop | develop        | Tareas, actualizaciones, documentación |
 | Release | `release/*` | develop | staging + main | Preparación de versión para producción |
-| Hotfix | `hotfix/*` | main | main + develop | Correcciones críticas en producción |
+| Hotfix  | `hotfix/*`  | main    | main + develop | Correcciones críticas en producción    |
 
 ## Flujo de Trabajo Estándar
 
@@ -49,6 +50,7 @@ git push -u origin feature/nombre-descriptivo
 ```
 
 **Commits semánticos recomendados:**
+
 - `feat:` - Nueva funcionalidad
 - `refactor:` - Refactorización sin cambio funcional
 - `fix:` - Corrección de bug
@@ -67,6 +69,7 @@ Cuando la feature esté lista:
 ```
 
 **Checklist para PR:**
+
 - [ ] Tests existentes en verde
 - [ ] ModuleBoundariesTest validado
 - [ ] Documentación iteración/fase actualizada
@@ -176,12 +179,14 @@ git push -u origin hotfix/descripcion-critico
 ### Feature Branch Naming
 
 ✅ **Bueno:**
+
 - `feature/migracion-career-layer`
 - `feature/java21-upgrade`
 - `feature/docker-backend-setup`
 - `feature/auth-supabase-integration`
 
 ❌ **Evitar:**
+
 - `feature/work`
 - `feature/fix`
 - `feature/test`
@@ -189,6 +194,7 @@ git push -u origin hotfix/descripcion-critico
 ### Release Branch Naming
 
 ✅ **Bueno:**
+
 - `release/iteracion-01`
 - `release/v1.0.0`
 - `release/fase-1-baseline`
@@ -196,17 +202,20 @@ git push -u origin hotfix/descripcion-critico
 ### Hotfix Branch Naming
 
 ✅ **Bueno:**
+
 - `hotfix/security-token-vuln`
 - `hotfix/database-connection-leak`
 
 ## Recomendaciones
 
 1. **Siempre mergear con `--no-ff`** en ramas principales (develop, staging, main) para mantener historial claro:
+
    ```bash
    git merge --no-ff feature/nombre
    ```
 
 2. **Rebase en lugar de merge** para ramas de feature si trabajan varias personas:
+
    ```bash
    git rebase develop
    git push -f origin feature/nombre (solo si es tu rama personal)
@@ -215,6 +224,7 @@ git push -u origin hotfix/descripcion-critico
 3. **Revisar PRs antes de mergear** - nunca mergear código propio sin revisión.
 
 4. **Borrar ramas completadas** para mantener el repositorio limpio:
+
    ```bash
    git branch -d feature/nombre
    git push origin --delete feature/nombre
@@ -225,6 +235,30 @@ git push -u origin hotfix/descripcion-critico
    git fetch origin
    git rebase origin/develop
    ```
+
+## Reglas de Protección de Ramas (GitHub)
+
+Para garantizar integridad de las ramas principales, se han configurado protecciones en GitHub:
+
+**Rama `main` (Producción):**
+- Requiere PR con 1+ aprobación
+- Requiere CI/CD verde
+- Requiere rama actualizada
+- Solo PRs de `release/*` y `hotfix/*`
+- Restricción de push: solo administradores
+
+**Rama `staging` (Pre-Prod):**
+- Requiere PR con 1+ aprobación
+- Requiere CI/CD verde
+- Solo PRs de `release/*` e `hotfix/*`
+- Restricción de push: solo administradores
+
+**Rama `develop` (Desarrollo):**
+- Requiere PR con 1+ aprobación
+- Requiere CI/CD verde
+- PRs de `feature/*`, `bugfix/*`, `chore/*`
+
+Ver configuración completa: [BRANCH-PROTECTION-RULES.md](BRANCH-PROTECTION-RULES.md)
 
 ## Estado Actual
 

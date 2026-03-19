@@ -1,0 +1,35 @@
+# Archivo de propietarios de código
+
+# GitHub auto-asigna revisores cuando se tocan estos archivos
+
+# Ver: https://docs.github.com/es/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Módulos de negocio
+
+src/main/java/aktech/planificador/modules/career/ @Akc9912
+src/main/java/aktech/planificador/modules/subject/ @Akc9912
+src/main/java/aktech/planificador/modules/equivalence/ @Akc9912
+src/main/java/aktech/planificador/modules/auth/ @Akc9912
+
+# Capa compartida
+
+src/main/java/aktech/planificador/shared/ @Akc9912
+
+# Configuración de seguridad
+
+src/main/java/aktech/planificador/Config/ @Akc9912
+
+# Documentación
+
+docs/ @Akc9912
+ARCHITECTURE.md @Akc9912
+engineering/ @Akc9912
+
+# Configuración de proyecto
+
+pom.xml @Akc9912
+.github/workflows/ @Akc9912
+
+# Default: cualquier cambio que no coincida arriba
+
+-                                                           @Akc9912
