@@ -1,2 +1,0 @@
-pom.xml:30:		<java.version>24</java.version>
-.github/workflows/modular-quality-gates.yml:25:          java-version: "24"

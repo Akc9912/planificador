@@ -61,7 +61,7 @@ Implementar la arquitectura backend definida y el stack base obligatorio (Java 2
 
 ## Fases De La Iteracion
 
-- [ ] Fase 1 - baseline y stack: [README de fase](fase-1-baseline-y-stack/README.md)
+- [x] Fase 1 - baseline y stack: [README de fase](fase-1-baseline-y-stack/README.md)
 - [ ] Fase 2 - migracion modulos criticos: [README de fase](fase-2-migracion-modulos-criticos/README.md)
 - [ ] Fase 3 - migracion modulos soporte: [README de fase](fase-3-migracion-modulos-soporte/README.md)
 - [ ] Fase 4 - cierre y validacion: [README de fase](fase-4-cierre-y-validacion/README.md)
@@ -97,7 +97,7 @@ Implementar la arquitectura backend definida y el stack base obligatorio (Java 2
 
 | Fase                                | Rango de tareas | README de fase                                                                             | Estado |
 | ----------------------------------- | --------------- | ------------------------------------------------------------------------------------------ | ------ |
-| Fase 1 - baseline y stack           | 1.1 a 1.4       | [fase-1-baseline-y-stack/README.md](fase-1-baseline-y-stack/README.md)                     | [ ]    |
+| Fase 1 - baseline y stack           | 1.1 a 1.4       | [fase-1-baseline-y-stack/README.md](fase-1-baseline-y-stack/README.md)                     | [x]    |
 | Fase 2 - migracion modulos criticos | 2.1 a 2.3       | [fase-2-migracion-modulos-criticos/README.md](fase-2-migracion-modulos-criticos/README.md) | [ ]    |
 | Fase 3 - migracion modulos soporte  | 3.1 a 3.3       | [fase-3-migracion-modulos-soporte/README.md](fase-3-migracion-modulos-soporte/README.md)   | [ ]    |
 | Fase 4 - cierre y validacion        | 4.1 a 4.3       | [fase-4-cierre-y-validacion/README.md](fase-4-cierre-y-validacion/README.md)               | [ ]    |
@@ -132,7 +132,7 @@ Metricas:
 
 ## Siguiente Paso Recomendado
 
-Ejecutar la tarea [1.1 Baseline de arquitectura y contratos](fase-1-baseline-y-stack/1.1.md) para congelar fotografia tecnica antes de cambios.
+Ejecutar la tarea [2.1 Migrar Career a capas target](fase-2-migracion-modulos-criticos/2.1.md) para iniciar migracion de modulos criticos.
 
 ## Criterio De Cierre De Iteracion
 
