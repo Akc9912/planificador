@@ -1,4 +1,4 @@
-package aktech.planificador.modules.subject.listener;
+package aktech.planificador.modules.subject.infrastructure.listener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,7 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import aktech.planificador.modules.subject.repository.SubjectRepository;
+import aktech.planificador.modules.subject.persistence.SubjectRepository;
 import aktech.planificador.shared.event.CareerDeletedEvent;
 
 @Component

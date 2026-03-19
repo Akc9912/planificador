@@ -16,20 +16,20 @@ Migrar Career y Subject a capas target con ejecucion incremental y regresion de 
 
 ## Tareas De La Fase
 
-- [ ] [2.1 Migrar Career a capas target](2.1.md)
-- [ ] [2.2 Migrar Subject a capas target](2.2.md)
-- [ ] [2.3 Regresion existente de modulos criticos](2.3.md)
+- [x] [2.1 Migrar Career a capas target](2.1.md)
+- [x] [2.2 Migrar Subject a capas target](2.2.md)
+- [x] [2.3 Regresion existente de modulos criticos](2.3.md)
 
 ## Checklist De Avance De Fase
 
-- [ ] todas las tareas listadas en esta fase estan creadas
-- [ ] cada tarea tiene comandos o verificacion explicita
-- [ ] no hay tareas fuera del rango definido para la fase
-- [ ] existe evidencia tecnica de cierre por tarea
+- [x] todas las tareas listadas en esta fase estan creadas
+- [x] cada tarea tiene comandos o verificacion explicita
+- [x] no hay tareas fuera del rango definido para la fase
+- [x] existe evidencia tecnica de cierre por tarea
 
 ## Criterio De Cierre De Fase
 
-- [ ] Career y Subject en capas target
-- [ ] contratos externos sin ruptura
-- [ ] tests existentes de modulos criticos en verde
-- [ ] estado de fase actualizado en README de iteracion
+- [x] Career y Subject en capas target
+- [x] contratos externos sin ruptura
+- [x] tests existentes de modulos criticos en verde
+- [x] estado de fase actualizado en README de iteracion
