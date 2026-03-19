@@ -1,4 +1,4 @@
-package aktech.planificador.modules.auth.controller;
+package aktech.planificador.modules.auth.presentation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,12 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import aktech.planificador.modules.auth.application.AuthSessionService;
 import aktech.planificador.modules.auth.dto.ChangePasswordRequestDto;
 import aktech.planificador.modules.auth.dto.LoginRequestDto;
 import aktech.planificador.modules.auth.dto.LoginResponseDto;
 import aktech.planificador.modules.auth.dto.RegisterRequestDto;
 import aktech.planificador.modules.auth.dto.TokenValidationRequestDto;
-import aktech.planificador.modules.auth.service.AuthSessionService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthModuleControllerTest {

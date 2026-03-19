@@ -1,4 +1,4 @@
-package aktech.planificador.modules.auth.filter;
+package aktech.planificador.modules.auth.infrastructure.filter;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +15,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import aktech.planificador.modules.auth.service.JwtService;
+import aktech.planificador.modules.auth.application.JwtService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package aktech.planificador.modules.equivalence.model;
+package aktech.planificador.modules.equivalence.domain.model;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

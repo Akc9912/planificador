@@ -1,4 +1,4 @@
-package aktech.planificador.modules.equivalence.controller;
+package aktech.planificador.modules.equivalence.presentation;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import aktech.planificador.modules.equivalence.application.EquivalenceService;
 import aktech.planificador.modules.equivalence.dto.EquivalenceCreateRequestDto;
 import aktech.planificador.modules.equivalence.dto.EquivalenceResponseDto;
 import aktech.planificador.modules.equivalence.dto.EquivalenceUpdateRequestDto;
-import aktech.planificador.modules.equivalence.service.EquivalenceService;
 import aktech.planificador.shared.exception.BusinessException;
 
 @RestController

@@ -2,7 +2,7 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-COPY target/planificador-0.0.1-SNAPSHOT.jar app.jar
+COPY target/planificador-1.0.0.jar app.jar
 
 EXPOSE 8081
 

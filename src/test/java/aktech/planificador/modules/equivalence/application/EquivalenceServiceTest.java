@@ -1,4 +1,4 @@
-package aktech.planificador.modules.equivalence.service;
+package aktech.planificador.modules.equivalence.application;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -18,11 +18,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import aktech.planificador.modules.equivalence.domain.model.Equivalence;
 import aktech.planificador.modules.equivalence.dto.EquivalenceCreateRequestDto;
 import aktech.planificador.modules.equivalence.dto.EquivalenceResponseDto;
 import aktech.planificador.modules.equivalence.dto.EquivalenceUpdateRequestDto;
-import aktech.planificador.modules.equivalence.model.Equivalence;
-import aktech.planificador.modules.equivalence.repository.EquivalenceRepository;
+import aktech.planificador.modules.equivalence.persistence.EquivalenceRepository;
 import aktech.planificador.shared.api.SubjectApi;
 import aktech.planificador.shared.dto.SubjectBasicDto;
 import aktech.planificador.shared.exception.BusinessException;

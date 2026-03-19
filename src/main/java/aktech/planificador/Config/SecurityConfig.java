@@ -10,7 +10,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import aktech.planificador.modules.auth.filter.AuthJwtAuthenticationFilter;
+import aktech.planificador.modules.auth.infrastructure.filter.AuthJwtAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {

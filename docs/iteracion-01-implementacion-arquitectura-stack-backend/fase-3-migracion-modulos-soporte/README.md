@@ -16,20 +16,20 @@ Migrar Equivalence y Auth a capas target, y consolidar contratos/eventos entre m
 
 ## Tareas De La Fase
 
-- [ ] [3.1 Migrar Equivalence a capas target](3.1.md)
-- [ ] [3.2 Migrar Auth a capas target](3.2.md)
-- [ ] [3.3 Consolidar contratos y eventos entre modulos](3.3.md)
+- [x] [3.1 Migrar Equivalence a capas target](3.1.md)
+- [x] [3.2 Migrar Auth a capas target](3.2.md)
+- [x] [3.3 Consolidar contratos y eventos entre modulos](3.3.md)
 
 ## Checklist De Avance De Fase
 
-- [ ] todas las tareas listadas en esta fase estan creadas
-- [ ] cada tarea tiene comandos o verificacion explicita
-- [ ] no hay tareas fuera del rango definido para la fase
-- [ ] existe evidencia tecnica de cierre por tarea
+- [x] todas las tareas listadas en esta fase estan creadas
+- [x] cada tarea tiene comandos o verificacion explicita
+- [x] no hay tareas fuera del rango definido para la fase
+- [x] existe evidencia tecnica de cierre por tarea
 
 ## Criterio De Cierre De Fase
 
-- [ ] Equivalence y Auth en capas target
-- [ ] comunicacion entre modulos solo por contratos/eventos
-- [ ] suite existente de modulos soporte en verde
-- [ ] estado de fase actualizado en README de iteracion
+- [x] Equivalence y Auth en capas target
+- [x] comunicacion entre modulos solo por contratos/eventos
+- [x] suite existente de modulos soporte en verde
+- [x] estado de fase actualizado en README de iteracion

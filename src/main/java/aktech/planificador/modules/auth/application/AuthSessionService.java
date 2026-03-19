@@ -1,4 +1,4 @@
-package aktech.planificador.modules.auth.service;
+package aktech.planificador.modules.auth.application;
 
 import java.util.Locale;
 import java.util.UUID;

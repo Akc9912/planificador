@@ -1,4 +1,4 @@
-package aktech.planificador.modules.auth.service;
+package aktech.planificador.modules.auth.application;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;

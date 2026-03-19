@@ -17,11 +17,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import aktech.planificador.Config.SecurityConfig;
-import aktech.planificador.modules.auth.controller.AuthModuleController;
+import aktech.planificador.modules.auth.application.AuthSessionService;
+import aktech.planificador.modules.auth.application.JwtService;
 import aktech.planificador.modules.auth.dto.LoginResponseDto;
-import aktech.planificador.modules.auth.filter.AuthJwtAuthenticationFilter;
-import aktech.planificador.modules.auth.service.AuthSessionService;
-import aktech.planificador.modules.auth.service.JwtService;
+import aktech.planificador.modules.auth.infrastructure.filter.AuthJwtAuthenticationFilter;
+import aktech.planificador.modules.auth.presentation.AuthModuleController;
 
 @WebMvcTest(controllers = AuthModuleController.class)
 @Import({ SecurityConfig.class, AuthJwtAuthenticationFilter.class })

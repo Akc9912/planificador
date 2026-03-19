@@ -1,4 +1,4 @@
-package aktech.planificador.modules.auth.filter;
+package aktech.planificador.modules.auth.infrastructure.filter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -21,7 +21,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import aktech.planificador.modules.auth.service.JwtService;
+import aktech.planificador.modules.auth.application.JwtService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;

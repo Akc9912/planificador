@@ -1,4 +1,4 @@
-package aktech.planificador.modules.equivalence.service;
+package aktech.planificador.modules.equivalence.application;
 
 import java.util.List;
 import java.util.Objects;
@@ -7,12 +7,12 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import aktech.planificador.modules.equivalence.domain.model.Equivalence;
 import aktech.planificador.modules.equivalence.dto.EquivalenceCreateRequestDto;
 import aktech.planificador.modules.equivalence.dto.EquivalenceResponseDto;
 import aktech.planificador.modules.equivalence.dto.EquivalenceUpdateRequestDto;
 import aktech.planificador.modules.equivalence.enums.EquivalenceType;
-import aktech.planificador.modules.equivalence.model.Equivalence;
-import aktech.planificador.modules.equivalence.repository.EquivalenceRepository;
+import aktech.planificador.modules.equivalence.persistence.EquivalenceRepository;
 import aktech.planificador.shared.api.SubjectApi;
 import aktech.planificador.shared.dto.SubjectBasicDto;
 import aktech.planificador.shared.exception.BusinessException;

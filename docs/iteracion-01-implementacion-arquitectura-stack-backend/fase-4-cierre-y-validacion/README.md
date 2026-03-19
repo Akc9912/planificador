@@ -16,20 +16,20 @@ Cerrar iteracion con regresion completa, checklist final de cumplimiento y backl
 
 ## Tareas De La Fase
 
-- [ ] [4.1 Regresion completa de tests existentes](4.1.md)
-- [ ] [4.2 Verificacion final de arquitectura y stack](4.2.md)
-- [ ] [4.3 Cierre de iteracion y backlog siguiente](4.3.md)
+- [x] [4.1 Regresion completa de tests existentes](4.1.md)
+- [x] [4.2 Verificacion final de arquitectura y stack](4.2.md)
+- [x] [4.3 Cierre de iteracion y backlog siguiente](4.3.md)
 
 ## Checklist De Avance De Fase
 
-- [ ] todas las tareas listadas en esta fase estan creadas
-- [ ] cada tarea tiene comandos o verificacion explicita
-- [ ] no hay tareas fuera del rango definido para la fase
-- [ ] existe evidencia tecnica de cierre por tarea
+- [x] todas las tareas listadas en esta fase estan creadas
+- [x] cada tarea tiene comandos o verificacion explicita
+- [x] no hay tareas fuera del rango definido para la fase
+- [x] existe evidencia tecnica de cierre por tarea
 
 ## Criterio De Cierre De Fase
 
-- [ ] regresion total existente en verde
-- [ ] checklist de arquitectura y stack completado
-- [ ] cierre de iteracion documentado
-- [ ] estado de fase actualizado en README de iteracion
+- [x] regresion total existente en verde
+- [x] checklist de arquitectura y stack completado
+- [x] cierre de iteracion documentado
+- [x] estado de fase actualizado en README de iteracion

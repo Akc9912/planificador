@@ -1,4 +1,4 @@
-package aktech.planificador.modules.equivalence.controller;
+package aktech.planificador.modules.equivalence.presentation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -18,10 +18,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import aktech.planificador.modules.equivalence.application.EquivalenceService;
 import aktech.planificador.modules.equivalence.dto.EquivalenceCreateRequestDto;
 import aktech.planificador.modules.equivalence.dto.EquivalenceResponseDto;
 import aktech.planificador.modules.equivalence.dto.EquivalenceUpdateRequestDto;
-import aktech.planificador.modules.equivalence.service.EquivalenceService;
 import aktech.planificador.shared.exception.BusinessException;
 
 @ExtendWith(MockitoExtension.class)

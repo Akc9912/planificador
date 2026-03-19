@@ -1,4 +1,4 @@
-package aktech.planificador.modules.auth.controller;
+package aktech.planificador.modules.auth.presentation;
 
 import java.util.Map;
 
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import aktech.planificador.modules.auth.application.AuthSessionService;
 import aktech.planificador.modules.auth.dto.ChangePasswordRequestDto;
 import aktech.planificador.modules.auth.dto.LoginRequestDto;
 import aktech.planificador.modules.auth.dto.LoginResponseDto;
 import aktech.planificador.modules.auth.dto.RegisterRequestDto;
 import aktech.planificador.modules.auth.dto.TokenValidationRequestDto;
-import aktech.planificador.modules.auth.service.AuthSessionService;
 
 @RestController
 @RequestMapping("/auth")
