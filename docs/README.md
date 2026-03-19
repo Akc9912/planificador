@@ -4,6 +4,15 @@ Este directorio contiene las iteraciones de documentacion para implementar la ar
 
 ## Iteracion Activa
 
+- [iteracion-02-hardening-arquitectonico-backend](iteracion-02-hardening-arquitectonico-backend/README.md)
+
+## Iteraciones Planificadas
+
+- [iteracion-03-rate-limit-redis-seguridad-basica](iteracion-03-rate-limit-redis-seguridad-basica/README.md)
+- [iteracion-04-cobertura-tablas-db-restantes](iteracion-04-cobertura-tablas-db-restantes/README.md)
+
+## Iteraciones Cerradas
+
 - [iteracion-01-implementacion-arquitectura-stack-backend](iteracion-01-implementacion-arquitectura-stack-backend/README.md)
 
 ## Regla Operativa
@@ -11,7 +20,7 @@ Este directorio contiene las iteraciones de documentacion para implementar la ar
 - Una sola iteracion activa por vez.
 - Trabajo modulo por modulo, de mayor criticidad a menor.
 - Sin introducir tecnologias de niveles superiores sin presion medible.
-- Sin crear tests nuevos en esta iteracion.
+- Crear tests nuevos solo cuando agreguen cobertura de reglas/seguridad o prevengan regresiones del alcance.
 
 ## Git Flow Setup
 
@@ -37,9 +46,9 @@ develop (Desarrollo)
 
 **Ver estrategia completa:** [BRANCHING-STRATEGY.md](BRANCHING-STRATEGY.md)
 
-Para la iteración 01, usar:
+Para la iteracion 02, usar:
 ```bash
 git checkout develop
 git pull
-git checkout -b feature/iteracion-01-fase-1
+git checkout -b feature/iteracion-02-fase-1
 ```
