@@ -37,3 +37,10 @@ build/
 ### VS Code ###
 .vscode/
 .env
+
+## Protocolo-IFS
+.ifs
+/engineering
+.github/hooks
+.github/prompts
+.github/copilot-instructions.md

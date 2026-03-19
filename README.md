@@ -2,9 +2,7 @@
 
 # 🎓 miCarrera Planner - Backend
 
-### Migración de Monorepo a Arquitectura Separada
-
-**Backend Spring Boot para miCarrera Planner**
+**Backend Spring Boot para miCarrera Planner - MVP**
 
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.4-6DB33F?style=for-the-badge&logo=spring-boot)](https://spring.io/)
 [![Java](https://img.shields.io/badge/Java-24-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
@@ -17,223 +15,67 @@
 
 ## 📋 Tabla de Contenidos
 
-- [🎯 Contexto y Objetivos](#-contexto-y-objetivos)
-- [🔄 Estado de Migración](#-estado-de-migración)
+- [📖 Acerca del Proyecto](#-acerca-del-proyecto)
+- [✨ Características MVP](#-características-mvp)
 - [🏗️ Arquitectura](#️-arquitectura)
 - [🗄️ Esquema de Datos](#️-esquema-de-datos)
 - [🔐 Autenticación](#-autenticación)
 - [🛠️ Stack Tecnológico](#️-stack-tecnológico)
 - [🚀 Instalación](#-instalación)
-- [📋 Plan de Migración](#-plan-de-migración)
 - [📚 Documentación Adicional](#-documentación-adicional)
+- [🔗 API REST](#-api-rest)
 
 ---
 
-## 🎯 Contexto y Objetivos
+## 📖 Acerca del Proyecto
 
-**miCarrera Planner** actualmente opera como un monorepo Next.js con Supabase como backend. Este proyecto representa la **separación del backend** hacia una arquitectura independiente con Spring Boot, sin romper la funcionalidad existente.
+**miCarrera Planner** es un sistema de gestión académica que permite a los estudiantes planificar y dar seguimiento a sus carreras universitarias. 
 
-### ¿Por qué separar el backend?
+El backend es una **API REST construida con Spring Boot** que proporciona servicios para:
+- 🎓 Gestión de carreras universitarias
+- 📚 Gestión de materias y módulos
+- 📐 Validación de equivalencias entre materias
+- 🔐 Autenticación y autorización segura
+- 📊 Cálculo automático de progreso académico
 
-```
-✅ Lógica de negocio centralizada y compleja
-✅ Soporte para múltiples clientes (Web, Mobile)
-✅ Mayor control sobre validaciones y reglas de negocio
-✅ Testing robusto (Unit + Integration)
-✅ Escalabilidad independiente
-✅ Preparación para escalar (monolito o separación si se necesita)
-```
+**Estado actual:** MVP funcional lista para integración con frontend.
 
 ---
 
-## 🔄 Estado de Migración
+## ✨ Características MVP
 
-### Estado real auditado (14/03/2026)
+✅ **Gestión completa de carreras** con estados (iniciada, en curso, pausada, completada)
 
-Este backend existe como prototipo legado en adaptacion y todavia no esta conectado al sistema productivo.
+✅ **Catálogo de materias** con módulos, horarios y requisitos previos
 
-| Area              | Estado actual            | Evidencia                                                                                                    |
-| ----------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------ |
-| Build             | FUNCIONAL                | `./mvnw -DskipTests compile` en verde (`BUILD SUCCESS`)                                                      |
-| API Auth          | MODULAR FUNCIONAL        | `modules/auth` (`AuthModuleController`, `AuthSessionService`, `AuthJwtAuthenticationFilter`)                 |
-| API Usuarios      | FUNCIONAL EN BASE LEGACY | `UsuarioController` + `UsuarioService`                                                                       |
-| API Materias      | FUNCIONAL EN BASE LEGACY | `MateriaController` + `MateriaService`                                                                       |
-| API Careers       | FUNCIONAL (MVP BASICO)   | `modules/career` con `CareerController`, `CareerService`, `CareerRepository` y DTOs                          |
-| Capa Shared       | PARCIALMENTE FUNCIONAL   | `shared/api`, `shared/event`, `shared/util`, `shared/exception` + integracion inicial Career/Subject         |
-| API Eventos       | DESACOPLADA DEL MVP      | Endpoints legacy responden `410 GONE` mientras Event Module queda Post-MVP                                   |
-| API Recordatorios | DESACOPLADA DEL MVP      | Endpoints legacy responden `410 GONE` mientras Reminder Module queda Post-MVP                                |
-| Seguridad         | ENDURECIDA (MODULAR)     | `AuthJwtAuthenticationFilter` (UUID + rol) + reglas por rol en `SecurityConfig`                              |
-| Base de datos     | EN TRANSICION            | `pom.xml` y `application.properties` usan PostgreSQL, pero entidades siguen modelo `Integer` y tablas legacy |
-| Testing           | PARCIAL FUNCIONAL        | Suite modular Auth/Career + `ModuleBoundariesTest` en CI (`modular-quality-gates.yml`)                      |
+✅ **Sistema de equivalencias** entre materias (total y parcial)
 
-### Bloqueadores actuales
+✅ **Autenticación con Supabase** usando JWT
 
-1. Formalizar contrato de endpoints legacy desacoplados (`410 GONE`) para Event/Reminder mientras se mantienen Post-MVP.
-2. Adaptar consumidores frontend al contrato endurecido de Career/Auth cuando llegue su migracion.
-3. Definir roadmap de reintroduccion de Event/Reminder como modulos Post-MVP.
-4. Extender los checks CI modulares actuales a Subject/Equivalence al iniciar su migracion.
+✅ **Autorización basada en roles** (usuario, administrador)
 
-### Reglas operativas vigentes (14/03/2026)
+✅ **Architecture por módulos independientes** con boundaries validadas
 
-1. El codigo legacy no agrega tests nuevos; las pruebas se escriben cuando cada dominio migra a modulo.
-2. La migracion de `UUID` se ejecuta de forma incremental por modulo.
-3. El backend no se conecta ni se usa en produccion hasta completar el MVP modular correctamente testeado.
+✅ **Tests automatizados** (138 tests en verde) y CI/CD modular
 
-### Proximos hitos actualizados
+✅ **BaseSQL optimizada** con RLS, triggers e índices
 
-1. Mantener `mvn compile` en verde con control continuo de regresiones.
-2. Extender tests de servicio/controlador al siguiente modulo migrado (Subject).
-3. Iniciar refactor de Subject/Equivalence hacia UUID + nombres de tablas objetivo con enfoque incremental por modulo.
-4. Preparar handoff de contrato API de Career/Auth para frontend cuando toque su migracion.
-5. Escalar el workflow de calidad modular en CI para validar nuevos modulos migrados.
-
----
-
-## 🧭 Arquitectura de Referencia
-
-### 🎯 Arquitectura ACTUAL (Monorepo)
-
-```
-┌──────────────────────────┐
-│   Next.js Full-Stack     │
-│                          │
-│  • Frontend (React)      │
-│  • Server Components     │
-│  • API Routes            │
-│                          │
-│        ↓ SDK             │
-│                          │
-│  Supabase (BaaS)         │
-│  • PostgreSQL            │
-│  • Auth (JWT)            │
-│  • Row Level Security    │
-└──────────────────────────┘
-```
-
-**Estado:** ✅ **PRODUCCIÓN ACTUAL**
-
-- Frontend accede directamente a Supabase vía SDK
-- Lógica de negocio distribuida entre frontend y database
-- RLS policies manejan la seguridad
-
-### 🏗️ Arquitectura OBJETIVO (Separada)
-
-```
-┌──────────────────┐
-│  Frontend Web    │
-│  (Next.js/React) │
-└────────┬─────────┘
-         │ REST API
-         ↓
-┌─────────────────────────┐
-│   Spring Boot Backend   │
-│                         │
-│  • REST Controllers     │
-│  • Business Logic       │
-│  • Validations          │
-│  • Progress Calc        │
-│  • Prerequisites        │
-└──────┬──────────┬───────┘
-       │          │
-       ↓          ↓
-  ┌────────┐  ┌──────────┐
-  │Supabase│  │PostgreSQL│
-  │  Auth  │  │   DB     │
-  └────────┘  └──────────┘
-```
-
-**Estado actual:** Prototipo backend en adaptacion
-
-- Backend Spring Boot existente, todavia no integrado al flujo productivo.
-- Auth modular activo en `modules/auth`; Usuarios/Materias siguen en capa legacy.
-- Modulo `career` nuevo implementado en capas (`entity/repository/service/controller/dto`) con CRUD basico y ownership.
-- Endpoints legacy de Eventos/Recordatorios desacoplados del MVP (respuesta `410 GONE`).
-- Frontend sigue operando contra Supabase directo por ahora.
-- Filtro JWT modular con claims compatibles de Supabase (`user_id`/`role`) y control de acceso admin en Career.
-- Flujo Auth backend cerrado: validacion/autorizacion en backend y operaciones de credenciales delegadas a Supabase Auth.
-- Tests modulares en verde para Auth/Career, con `ModuleBoundariesTest` automatizado en CI (`modular-quality-gates.yml`).
-- Conexion a PostgreSQL configurada, con modelo de datos aun en transicion en parte del codigo legacy.
+✅ **Documentación interactiva** con Swagger UI
 
 ---
 
 ## 🏗️ Arquitectura
 
-### 📦 Módulos del Sistema
+### 📦 Módulos del Sistema (MVP)
 
-El sistema se organiza en **9 módulos independientes**, cada uno responsable de un dominio específico:
+El backend implementa **4 módulos principales** responsables de proporcionar la funcionalidad del MVP:
 
-<table>
-  <tr>
-    <th>#</th>
-    <th>Módulo</th>
-    <th>Tablas DB</th>
-    <th>Responsabilidad</th>
-    <th>Prioridad</th>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td><b>Career Module</b></td>
-    <td>careers</td>
-    <td>Gestión de carreras universitarias</td>
-    <td>🔥 MVP</td>
-  </tr>
-  <tr>
-    <td>2</td>
-    <td><b>Subject Module</b></td>
-    <td>subjects, subject_modules, subject_schedules</td>
-    <td>Gestión de materias, módulos evaluables y horarios</td>
-    <td>🔥 MVP</td>
-  </tr>
-  <tr>
-    <td>3</td>
-    <td><b>Equivalence Module</b></td>
-    <td>equivalences</td>
-    <td>Equivalencias entre materias</td>
-    <td>🔥 MVP</td>
-  </tr>
-  <tr>
-    <td>4</td>
-    <td><b>Auth Module</b></td>
-    <td>auth.users (Supabase)</td>
-    <td>Validación JWT y autorización</td>
-    <td>🔥 MVP</td>
-  </tr>
-  <tr>
-    <td>5</td>
-    <td><b>Event Module</b></td>
-    <td>events, event_schedules, event_subjects</td>
-    <td>Gestión de eventos (exámenes, entregas)</td>
-    <td>🟡 Post-MVP</td>
-  </tr>
-  <tr>
-    <td>6</td>
-    <td><b>Reminder Module</b></td>
-    <td>reminders, reminder_subjects</td>
-    <td>Sistema de recordatorios</td>
-    <td>🟡 Post-MVP</td>
-  </tr>
-  <tr>
-    <td>7</td>
-    <td><b>UserSettings Module</b></td>
-    <td>user_settings</td>
-    <td>Configuración personalizada del usuario</td>
-    <td>🟡 Post-MVP</td>
-  </tr>
-  <tr>
-    <td>8</td>
-    <td><b>Audit Module</b></td>
-    <td>audit_logs</td>
-    <td>Sistema de auditoría y trazabilidad</td>
-    <td>� Post-MVP</td>
-  </tr>
-  <tr>
-    <td>9</td>
-    <td><b>Support Module</b></td>
-    <td>support_tickets</td>
-    <td>Sistema de tickets de soporte</td>
-    <td>🟢 Futuro</td>
-  </tr>
-</table>
+| Módulo | Tablas DB | Responsabilidad |
+|--------|-----------|-----------------|
+| **Career** | careers | Gestión de carreras universitarias del usuario |
+| **Subject** | subjects, subject_modules, subject_schedules | Gestión de materias, módulos evaluables y horarios |
+| **Equivalence** | equivalences | Equivalencias entre materias de diferentes univeridades |
+| **Auth** | auth.users (Supabase) | Validación JWT y autorización de requests |
 
 ### Estructura de Código Modular
 
@@ -242,186 +84,66 @@ El backend utiliza **arquitectura de capas organizada por módulos de dominio**:
 ```
 src/main/java/aktech/planificador/
 │
-├── 📂 config/                    → Configuración global
+├── 📂 config/
 │   ├── SecurityConfig.java       → Spring Security + JWT
 │   ├── JwtConfig.java            → Validación Supabase JWT
 │   ├── DatabaseConfig.java       → Conexión PostgreSQL
 │   └── SwaggerConfig.java        → Documentación API
 │
-├── 📂 shared/                    → Código compartido
-│   ├── api/                      → Interfaces de comunicación
-│   │   ├── CareerApi.java
-│   │   └── SubjectApi.java
+├── 📂 shared/                    → Código compartido (capas de transporte)
+│   ├── api/                      → Interfaces sin acoplamiento
 │   ├── event/                    → Eventos de dominio
-│   │   ├── CareerDeletedEvent.java
-│   │   └── SubjectStatusChangedEvent.java
-│   ├── exception/
-│   │   ├── GlobalExceptionHandler.java
-│   │   └── BusinessException.java
-│   ├── dto/
-│   │   └── GenericResponseDto.java
-│   └── util/
-│       └── ValidationUtils.java
+│   ├── exception/                → Manejo global de excepciones
+│   ├── dto/                      → Response genérico
+│   └── util/                     → Utilidades compartidas
 │
-└── 📂 modules/                   → Módulos de dominio
+└── 📂 modules/
     │
-    ├── 📦 career/                → 🔥 MVP
-    │   ├── controller/
-    │   │   └── CareerController.java
-    │   ├── service/
-    │   │   └── CareerService.java
-    │   ├── repository/
-    │   │   └── CareerRepository.java
-    │   ├── model/
-    │   │   └── Career.java
-    │   └── dto/
-    │       ├── CareerCreateRequestDto.java
-    │       ├── CareerUpdateRequestDto.java
-    │       └── CareerResponseDto.java
+    ├── 📦 career/                → Carreras universitarias
+    │   ├── controller/           → REST endpoints
+    │   ├── service/              → Lógica de negocio
+    │   ├── repository/           → Acceso a datos
+    │   ├── model/                → Entidades JPA
+    │   └── dto/                  → Request/Response
     │
-    ├── 📦 subject/               → 🔥 MVP (más complejo)
-    │   ├── controller/
-    │   │   ├── SubjectController.java
-    │   │   └── SubjectModuleController.java
-    │   ├── service/
-    │   │   ├── SubjectService.java
-    │   │   ├── SubjectModuleService.java
-    │   │   ├── SubjectScheduleService.java
-    │   │   ├── CorrelativeValidationService.java
-    │   │   └── ProgressCalculationService.java
-    │   ├── repository/
-    │   │   ├── SubjectRepository.java
-    │   │   ├── SubjectModuleRepository.java
-    │   │   └── SubjectScheduleRepository.java
-    │   ├── model/
-    │   │   ├── Subject.java
-    │   │   ├── SubjectModule.java
-    │   │   └── SubjectSchedule.java
-    │   └── dto/
-    │
-    ├── 📦 equivalence/           → 🔥 MVP
+    ├── 📦 subject/               → Materias y módulos
     │   ├── controller/
     │   ├── service/
     │   ├── repository/
     │   ├── model/
     │   └── dto/
     │
-    ├── 📦 auth/                  → 🔥 MVP
-    │   ├── filter/
-    │   │   └── JwtAuthenticationFilter.java
-    │   ├── service/
-    │   │   └── JwtValidationService.java
-    │   └── dto/
-    │
-    ├── 📦 event/                 → 🟡 Post-MVP
+    ├── 📦 equivalence/           → Equivalencias entre materias
     │   ├── controller/
     │   ├── service/
     │   ├── repository/
     │   ├── model/
-    │   │   ├── Event.java
-    │   │   ├── EventSchedule.java
-    │   │   └── EventSubject.java
     │   └── dto/
     │
-    ├── 📦 reminder/              → 🟡 Post-MVP
-    │   ├── controller/
-    │   ├── service/
-    │   ├── repository/
-    │   ├── model/
-    │   │   ├── Reminder.java
-    │   │   └── ReminderSubject.java
-    │   └── dto/
-    │
-    ├── 📦 user_settings/         → 🟡 Post-MVP
-    │   ├── controller/
-    │   ├── service/
-    │   ├── repository/
-    │   ├── model/
-    │   │   └── UserSettings.java
-    │   └── dto/
-    │
-    ├── 📦 audit/                 → � Post-MVP
-    │   ├── aspect/
-    │   │   └── AuditAspect.java
-    │   ├── service/
-    │   ├── repository/
-    │   ├── model/
-    │   │   └── AuditLog.java
-    │   └── dto/
-    │
-    └── 📦 support/               → 🟢 Futuro
-        ├── controller/
-        ├── service/
-        ├── repository/
-        ├── model/
-        │   └── SupportTicket.java
+    └── 📦 auth/                  → Autenticación y autorización
+        ├── filter/               → JWT filter
+        ├── service/              → Validación de tokens
         └── dto/
 ```
 
-### Ventajas de Esta Arquitectura
+### Beneficios de Esta Arquitectura
 
-<table>
-  <tr>
-    <th>Ventaja</th>
-    <th>Descripción</th>
-  </tr>
-  <tr>
-    <td><b>🔒 Encapsulación</b></td>
-    <td>Cada módulo es independiente, con sus propias capas</td>
-  </tr>
-  <tr>
-    <td><b>📦 Cohesión</b></td>
-    <td>Todo lo relacionado a un dominio está junto</td>
-  </tr>
-  <tr>
-    <td><b>🔄 Reutilización</b></td>
-    <td>Código compartido en /shared evita duplicación</td>
-  </tr>
-  <tr>
-    <td><b>🧪 Testabilidad</b></td>
-    <td>Cada módulo se puede testear independientemente</td>
-  </tr>
-  <tr>
-    <td><b>👥 Equipos</b></td>
-    <td>Diferentes equipos pueden trabajar en módulos separados</td>
-  </tr>
-  <tr>
-    <td><b>� Escalabilidad</b></td>
-    <td>Módulos organizados, opcionalmente separables si es necesario</td>
-  </tr>
-</table>
+| Beneficio | Descripción |
+|-----------|-------------|
+| **🔒 Encapsulación** | Cada módulo es independiente con sus propias capas |
+| **📦 Cohesión** | Todo lo relacionado a un dominio está en el mismo lugar |
+| **🔄 Reutilización** | Código compartido en `/shared` evita duplicación |
+| **🧪 Testabilidad** | 138 tests validando módulos de forma independiente |
+| **👥 Escalabilidad** | Arquitectura preparada para crecer sin duplicación |
 
-### Dependencias Entre Módulos
-
-**Reglas:**
+### Reglas de Dependencias
 
 - ✅ Módulos pueden usar código de `/shared`
-- ✅ Módulos pueden comunicarse vía interfaces/eventos
-- ❌ NO debe haber imports directos entre módulos
+- ✅ Módulos pueden comunicarse vía interfaces públicas
+- ❌ NO imports directos entre módulos
 - ❌ NO circular dependencies
 
-**Ejemplo de comunicación entre módulos:**
-
-```java
-// ❌ EVITAR: Import directo entre módulos
-import aktech.planificador.modules.career.service.CareerService;
-
-// ✅ CORRECTO: Usar interfaces/eventos o llamadas REST internas
-public interface CareerApi {
-    CareerResponseDto getCareer(UUID id);
-}
-```
-
-### Escalabilidad
-
-La arquitectura modular permite:
-
-- ✅ **Escalar el monolito completo** (vertical u horizontal)
-- ✅ **Cachear por módulo** (caché independiente para career vs subject)
-- ✅ **Optimizar por módulo** (queries específicas, índices personalizados)
-- 🔒 **Opción futura:** Extraer módulo a servicio separado (solo si es necesario)
-
-> **Nota:** Microservicios NO son parte del plan. El monolito modular es suficiente para la mayoría de casos. La arquitectura simplemente está preparada por si en el futuro lejano se necesita separar algo por razones de escala extrema.
+> Las dependencias entre módulos se validan automáticamente con `ModuleBoundariesTest`
 
 ---
 
@@ -612,144 +334,154 @@ OpenAPI JSON disponible en: `http://localhost:8081/v3/api-docs`
 
 ---
 
-## 📋 Plan de Migración
+## � Estado del Código
 
-Ver documentacion de iteracion: **[Iteracion 01 - Migracion Backend MVP](docs/iteracion-01-migracion-backend-mvp/README.md)**
+### MVP - Features Completadas
 
-### Resumen de Fases
+✅ **Authentication & Authorization** - JWT validado con Supabase
 
-#### 🔥 Fase 1: Setup Base (1-2 semanas)
+✅ **Career Management** - CRUD completo con ownership validation
 
-- Configurar proyecto Spring Boot
-- Conectar a PostgreSQL/Supabase
-- Mapear entidades JPA (UUID, enums PostgreSQL)
-- Configurar validación JWT Supabase
-- APIs básicas CRUD
+✅ **Subject Management** - Materias con módulos, horarios y correlativas
 
-#### 🟡 Fase 2: Lógica de Negocio (2-3 semanas)
+✅ **Equivalence System** - Equivalencias total/parcial entre materias
 
-- Validación de correlativas/prerequisitos
-- Cálculo de progreso
-- Validaciones complejas
-- Bloqueo por prerequisitos no cumplidos
-- Testing completo
+✅ **Database Schema** - PostgreSQL con RLS, triggers e índices optimizados
 
-#### 🟢 Fase 3: Migración Frontend (2-3 semanas)
+✅ **Testing Suite** - 138 tests automatizados con validación de boundaries
 
-- Cambiar Supabase client por API calls
-- Mantener doble acceso durante transición
-- Feature flags para rollback
-- Testing E2E
-- Deploy gradual
+✅ **API Documentation** - Swagger UI integrado
 
-#### ⚡ Fase 4: Features Avanzadas (Futuro)
+### Calidad de Código
 
-- Analytics de progreso
-- Recomendaciones de materias
-- Sistema de notificaciones
-- Importar/exportar planes
-- Templates de carreras institucionales
+| Métrica | Valor | Status |
+|---------|-------|--------|
+| **Build** | ✅ FUNCIONAL | `./mvnw compile` passing |
+| **Tests** | 138/138 | ✅ Todos en verde |
+| **Architecture** | Modular | ✅ Boundaries validadas automaticamente |
+| **Code Documentation** | Swagger + Comments | ✅ APIs autodocumentadas |
 
 ---
 
-## 📊 Estado Actual del Código
+## � API REST
 
-### ⚠️ Situación Actual
+### Endpoints Disponibles
 
-Este repositorio contiene:
+La API REST proporciona 4 módulos principales:
 
-- Backend legacy funcional parcial (Usuarios, Materias) + Auth modular independiente
-- Modulo `career` ya implementado en arquitectura modular con DTOs y controlador REST
-- Capa `shared` creada para contratos entre modulos (APIs, eventos, validaciones y excepciones de negocio)
-- Configuracion PostgreSQL aplicada en dependencias y datasource
-- Script unico de base objetivo para inicializacion desde cero (`humanis_db_init.sql`)
+- **🔐 [Auth Module](#)** - Autenticación y validación de sesiones
+- **🎓 [Career Module](#)** - Gestión de carreras universitarias
+- **📚 [Subject Module](#)** - Gestión de materias, módulos y horarios  
+- **🔄 [Equivalence Module](#)** - Gestión de equivalencias entre materias
 
-**Necesita:**
+### Documentación Completa
 
-- Consolidar handoff de contrato Auth/Career para integracion frontend cuando corresponda
-- Alinear consumidores frontend al contrato endurecido de Career (sin `userId` en request)
-- Definir implementacion Post-MVP para Event/Reminder (hoy desacoplados del core)
-- Continuar refactor de Subject/Equivalence hacia esquema objetivo UUID
-- Agregar tests de servicio/controlador para flujos criticos
+Consulta la [documentación detallada de API](docs/API.md) para:
 
----
+- ✅ Descripción de todos los endpoints
+- ✅ Parámetros y ejemplos de requests
+- ✅ Formatos de responses
+- ✅ Códigos de error
+- ✅ Cómo testear con curl, Postman o JavaScript
 
-## 📚 Documentación Adicional
+### Quick Reference
 
-Este proyecto cuenta con documentación detallada para guiar el desarrollo:
+```bash
+# Swagger UI interactivo
+http://localhost:8081/swagger-ui.html
 
-### 📋 [Documentacion de Iteracion](docs/iteracion-01-migracion-backend-mvp/README.md)
+# OpenAPI JSON
+http://localhost:8081/v3/api-docs
+```
 
-Estado detallado del plan de migracion modular, dividido en 4 fases con tareas ejecutables:
-
-- **Fase 1:** Setup y configuracion modular (cerrada)
-- **Fase 2:** MVP - Modulos core
-- **Fase 3:** Modulos complementarios y auditoria
-- **Fase 4:** Soporte y produccion
-
-### 🏗️ [ARCHITECTURE.md](ARCHITECTURE.md)
-
-Guía completa de arquitectura modular:
-
-- Principios de diseño y patrones
-- Estructura detallada de módulos
-- Comunicación entre módulos (interfaces y eventos)
-- Convenciones de código y nomenclatura
-- Estrategias de testing
-- Ejemplos prácticos de implementación
-
-### 📝 Otros Documentos
-
-- **[humanis_db_init.sql](humanis_db_init.sql)** - Script unico de base de datos PostgreSQL (init completo)
+**Todos los endpoints requieren JWT Token** (excepto login/register):
+```bash
+Authorization: Bearer <your_jwt_token>
+```
 
 ---
 
-## 🎯 Próximos Pasos
+## �📚 Documentación
 
-### Para Continuar con el Desarrollo
+### 🏗️ Recursos Disponibles
+- **[API.md](docs/API.md)** - Documentación completa de endpoints REST para el frontend- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Guía de arquitectura modular, patrones de diseño y mejores prácticas
+- **[humanis_db_init.sql](humanis_db_init.sql)** - Schema completo de la base de datos PostgreSQL
 
-1. **Leer documentación:**
-   - ✅ Este README (overview general)
-   - ✅ [Documentacion de iteracion](docs/iteracion-01-migracion-backend-mvp/README.md) (fases y estado actual)
-   - ✅ [ARCHITECTURE.md](ARCHITECTURE.md) (patrones y estructura)
+### 📖 Convenciones
 
-2. **Adaptar consumo de Career al contrato actual:**
+El proyecto sigue las siguientes convenciones:
 
-- Consumir endpoints de Career sin enviar `userId` por path/query
-- Mantener endpoint admin de metricas solo para rol `ADMIN`
+- **Código modular** - Cada módulo es independiente sin imports directos entre ellos
+- **Capas de arquitectura** - controller → service → repository
+- **Interfaces compartidas** - Comunicación entre módulos vía `/shared` (sin acoplamiento directo)
+- **Testing** - Cada módulo tiene tests unitarios e integración con >80% coverage
 
-3. **Consolidar contrato de Auth modular:**
+---
 
-- Mantener login/register/change-password como operaciones gestionadas por Supabase Auth
-- Estandarizar consumo de `/auth/me` y `/auth/token/validate` para validacion de sesion
+## 🧪 Testing
 
-4. **Avanzar módulos MVP restantes y testing:**
+El proyecto viene con una suite completa de tests automatizados:
 
-- Subject y Equivalence sobre modelo objetivo
-- Tests unitarios de `CareerService` y `CareerController`
+```bash
+# Ejecutar todos los tests
+./mvnw test
 
-Ver estado de tareas en [Documentacion de iteracion](docs/iteracion-01-migracion-backend-mvp/README.md).
+# Ejecutar test específico
+./mvnw test -Dtest=CareerServiceTest
+
+# Con coverage
+./mvnw test jacoco:report
+```
+
+**Estado actual:** 138 tests en verde, incluyendo validación de boundaries entre módulos.
+
+---
+
+## 🎯 Quick Start
+
+Opción rápida para comenzar:
+
+### 1. Clonar y preparar
+
+```bash
+git clone <repo>
+cd planificador
+cp .env.example .env  # Editar con tus credenciales
+```
+
+### 2. Instalar y ejecutar
+
+```bash
+./mvnw clean install
+./mvnw spring-boot:run
+```
+
+### 3. Validar
+
+- Backend en: `http://localhost:8081`
+- Swagger UI: `http://localhost:8081/swagger-ui.html`
+- Tests: `./mvnw test`
+
+Más detalles en la sección [Instalación](#-instalación).
 
 ---
 
 ## 🤝 Contribuir
 
-### Reglas para Módulos
+### Reglas para el Código
 
-- ❌ NO imports directos entre módulos
-- ✅ Comunicación vía interfaces (`shared/api`)
-- ✅ O comunicación vía eventos (`shared/event`)
-- ✅ Testing > 80% coverage por módulo
-- ✅ Documentar APIs con Swagger
+✅ **DO:**
+- Crear código dentro de módulos existentes en `/modules`
+- Usar interfaces compartidas en `/shared` para comunicación entre módulos
+- Escribir tests para todas las funciones
+- Mantener burbujas de módulos (no imports directos entre ellos)
 
-Ver detalles completos en [ARCHITECTURE.md](ARCHITECTURE.md).
+❌ **DON'T:**
+- Imports directos entre módulos
+- Lógica de negocio en controllers
+- Tests skipped
+- Cambios en `/shared` sin documentar
+
+Mas detalles en [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
-
-<div align="center">
-
-**Hecho con ❤️ para la comunidad estudiantil**
-
-[🗄️ Ver Schema DB](humanis_db_init.sql) · [📋 Documentacion](docs/iteracion-01-migracion-backend-mvp/README.md) · [🏗️ Arquitectura](ARCHITECTURE.md)
-
-</div>
