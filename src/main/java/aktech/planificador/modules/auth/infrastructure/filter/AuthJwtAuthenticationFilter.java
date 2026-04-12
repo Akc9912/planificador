@@ -39,28 +39,38 @@ public class AuthJwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
 
+        logger.info("[JWT-DEBUG] {} {} - Authorization header: {}", request.getMethod(), request.getRequestURI(),
+                authHeader);
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.warn("[JWT-DEBUG] Falta header Authorization o formato incorrecto. {} {}", request.getMethod(),
+                    request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
 
         final String jwt = authHeader.substring(7);
+        logger.info("[JWT-DEBUG] Token extraído: {}", jwt);
 
         try {
             if (!jwtService.isTokenValid(jwt)) {
+                logger.warn("[JWT-DEBUG] Token inválido: {}", jwt);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 UUID userId = jwtService.extractUserId(jwt);
+                logger.info("[JWT-DEBUG] userId extraído: {}", userId);
                 if (userId == null) {
-                    logger.warn("Token sin userId UUID valido. {} {}", request.getMethod(), request.getRequestURI());
+                    logger.warn("[JWT-DEBUG] Token sin userId UUID válido. {} {}", request.getMethod(),
+                            request.getRequestURI());
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
 
                 String normalizedRole = normalizeRole(jwtService.extractRole(jwt));
+                logger.info("[JWT-DEBUG] Rol extraído: {}", normalizedRole);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userId.toString(),
                         null,
@@ -69,7 +79,7 @@ public class AuthJwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         } catch (Exception ex) {
-            logger.warn("Error validando JWT: {}", ex.getMessage());
+            logger.warn("[JWT-DEBUG] Error validando JWT: {}", ex.getMessage(), ex);
             SecurityContextHolder.clearContext();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;

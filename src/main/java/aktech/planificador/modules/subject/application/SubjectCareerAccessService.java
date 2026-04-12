@@ -1,5 +1,6 @@
 package aktech.planificador.modules.subject.application;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -38,7 +39,9 @@ public class SubjectCareerAccessService {
         ValidationUtils.requireNotNull(userId, "El id de usuario es obligatorio");
         ValidationUtils.requireNotNull(subjectId, "El id de materia es obligatorio");
 
-        Subject subject = subjectRepository.findById(subjectId)
+        UUID safeSubjectId = Objects.requireNonNull(subjectId, "El id de materia es obligatorio");
+
+        Subject subject = subjectRepository.findById(safeSubjectId)
                 .orElseThrow(() -> new NotFoundException("Materia no encontrada o sin permisos"));
 
         if (!careerApi.userOwnsCareer(userId, subject.getCareerId())) {
@@ -49,7 +52,8 @@ public class SubjectCareerAccessService {
     }
 
     public boolean userOwnsSubject(UUID userId, UUID subjectId) {
-        Subject subject = subjectRepository.findById(subjectId).orElse(null);
+        UUID safeSubjectId = Objects.requireNonNull(subjectId, "El id de materia es obligatorio");
+        Subject subject = subjectRepository.findById(safeSubjectId).orElse(null);
         if (subject == null) {
             return false;
         }

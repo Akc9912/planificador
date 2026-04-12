@@ -49,6 +49,7 @@ public class SecurityConfig {
         // Permitir solo frontend en Vercel y localhost para pruebas
         config.addAllowedOrigin("https://timewise-planner.vercel.app");
         config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("http://localhost:3001"); // Habilitar CORS para frontend local en puerto 3001
 
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
