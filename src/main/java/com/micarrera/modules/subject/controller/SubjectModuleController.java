@@ -14,19 +14,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.micarrera.modules.subject.service.SubjectModuleServiceImpl;
 import com.micarrera.modules.subject.api.dto.SubjectModuleCreateRequestDto;
 import com.micarrera.modules.subject.api.dto.SubjectModuleResponseDto;
 import com.micarrera.modules.subject.api.dto.SubjectModuleUpdateRequestDto;
+import com.micarrera.modules.subject.service.SubjectModuleServiceImpl;
 import com.micarrera.shared.exception.BusinessException;
 
 @RestController
-@lombok.RequiredArgsConstructor
 @RequestMapping("/subjects/{subjectId}/modules")
 public class SubjectModuleController {
 
     private final SubjectModuleServiceImpl subjectModuleService;
 
+    public SubjectModuleController(SubjectModuleServiceImpl subjectModuleService) {
+        this.subjectModuleService = subjectModuleService;
+    }
 
     @GetMapping
     public List<SubjectModuleResponseDto> listBySubject(@PathVariable UUID subjectId) {

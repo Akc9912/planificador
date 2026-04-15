@@ -10,12 +10,14 @@ import com.micarrera.modules.subject.repository.SubjectRepository;
 import com.micarrera.shared.event.CareerDeletedEvent;
 
 @Component
-@lombok.RequiredArgsConstructor
 public class CareerEventListener {
     private static final Logger logger = LoggerFactory.getLogger(CareerEventListener.class);
 
     private final SubjectRepository subjectRepository;
 
+    public CareerEventListener(SubjectRepository subjectRepository) {
+        this.subjectRepository = subjectRepository;
+    }
 
     @EventListener
     @Transactional

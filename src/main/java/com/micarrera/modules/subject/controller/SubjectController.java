@@ -15,24 +15,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.micarrera.modules.subject.api.dto.CareerProgressResponseDto;
+import com.micarrera.modules.subject.api.dto.*;
 import com.micarrera.modules.subject.service.SubjectDashboardServiceImpl;
 import com.micarrera.modules.subject.service.SubjectServiceImpl;
-import com.micarrera.modules.subject.api.dto.CareerDashboardResponseDto;
-import com.micarrera.modules.subject.api.dto.SubjectAvailabilityResponseDto;
-import com.micarrera.modules.subject.api.dto.SubjectCreateRequestDto;
-import com.micarrera.modules.subject.api.dto.SubjectResponseDto;
-import com.micarrera.modules.subject.api.dto.SubjectUpdateRequestDto;
 import com.micarrera.shared.exception.BusinessException;
 
 @RestController
-@lombok.RequiredArgsConstructor
 @RequestMapping("/subjects")
 public class SubjectController {
 
     private final SubjectServiceImpl subjectService;
     private final SubjectDashboardServiceImpl subjectDashboardService;
 
+    public SubjectController(SubjectServiceImpl subjectService, SubjectDashboardServiceImpl subjectDashboardService) {
+        this.subjectService = subjectService;
+        this.subjectDashboardService = subjectDashboardService;
+    }
 
     @PostMapping
     public SubjectResponseDto createSubject(@RequestBody SubjectCreateRequestDto request) {

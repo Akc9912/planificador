@@ -14,19 +14,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.micarrera.modules.subject.service.SubjectScheduleServiceImpl;
 import com.micarrera.modules.subject.api.dto.SubjectScheduleCreateRequestDto;
 import com.micarrera.modules.subject.api.dto.SubjectScheduleResponseDto;
 import com.micarrera.modules.subject.api.dto.SubjectScheduleUpdateRequestDto;
+import com.micarrera.modules.subject.service.SubjectScheduleServiceImpl;
 import com.micarrera.shared.exception.BusinessException;
 
 @RestController
-@lombok.RequiredArgsConstructor
 @RequestMapping("/subjects/{subjectId}/schedules")
 public class SubjectScheduleController {
 
     private final SubjectScheduleServiceImpl subjectScheduleService;
 
+    public SubjectScheduleController(SubjectScheduleServiceImpl subjectScheduleService) {
+        this.subjectScheduleService = subjectScheduleService;
+    }
 
     @GetMapping
     public List<SubjectScheduleResponseDto> listBySubject(@PathVariable UUID subjectId) {
