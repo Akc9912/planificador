@@ -1,0 +1,60 @@
+package com.micarrera.modules.subject.service;
+
+import java.util.Objects;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import com.micarrera.modules.subject.entity.Subject;
+import com.micarrera.modules.subject.repository.SubjectRepository;
+import com.micarrera.modules.career.api.CareerApi;
+import com.micarrera.shared.exception.NotFoundException;
+import com.micarrera.shared.util.ValidationUtils;
+
+@Service
+@lombok.RequiredArgsConstructor
+public class SubjectCareerAccessServiceImpl {
+
+    private final CareerApi careerApi;
+    private final SubjectRepository subjectRepository;
+
+
+    public void validateCareerOwnership(UUID userId, UUID careerId) {
+        ValidationUtils.requireNotNull(userId, "El id de usuario es obligatorio");
+        ValidationUtils.requireNotNull(careerId, "El id de carrera es obligatorio");
+
+        if (!careerApi.existsCareer(careerId)) {
+            throw new NotFoundException("Carrera no encontrada");
+        }
+
+        if (!careerApi.userOwnsCareer(userId, careerId)) {
+            throw new NotFoundException("La carrera no pertenece al usuario");
+        }
+    }
+
+    public Subject getOwnedSubjectOrThrow(UUID userId, UUID subjectId) {
+        ValidationUtils.requireNotNull(userId, "El id de usuario es obligatorio");
+        ValidationUtils.requireNotNull(subjectId, "El id de materia es obligatorio");
+
+        UUID safeSubjectId = Objects.requireNonNull(subjectId, "El id de materia es obligatorio");
+
+        Subject subject = subjectRepository.findById(safeSubjectId)
+                .orElseThrow(() -> new NotFoundException("Materia no encontrada o sin permisos"));
+
+        if (!careerApi.userOwnsCareer(userId, subject.getCareerId())) {
+            throw new NotFoundException("Materia no encontrada o sin permisos");
+        }
+
+        return subject;
+    }
+
+    public boolean userOwnsSubject(UUID userId, UUID subjectId) {
+        UUID safeSubjectId = Objects.requireNonNull(subjectId, "El id de materia es obligatorio");
+        Subject subject = subjectRepository.findById(safeSubjectId).orElse(null);
+        if (subject == null) {
+            return false;
+        }
+
+        return careerApi.userOwnsCareer(userId, subject.getCareerId());
+    }
+}
